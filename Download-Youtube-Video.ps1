@@ -47,11 +47,13 @@ else {
 
 if (-not [string]::IsNullOrEmpty($IntermediateDir) -and [string]::IsNullOrEmpty($OutDir)) {
     foreach ($file in Get-ChildItem $IntermediateDir -Exclude "downloaded_ps.txt") {
+        Write-Host "'Moving $($file.Name)' to '$($PreviousLocation)\$($file.Name)"
         Move-Item "$($file.Name)" "$($PreviousLocation)\$($file.Name)"
     }
 }
 elseif (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not [string]::IsNullOrEmpty($OutDir)) {
     foreach ($file in Get-ChildItem $IntermediateDir -Exclude "downloaded_ps.txt") {
+        Write-Host "'Moving $($file.Name)' to '$($OutDir)\$($file.Name)"
         Move-Item "$($file.Name)" "$($OutDir)\$($file.Name)"
     }
 }
