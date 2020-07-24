@@ -17,10 +17,6 @@ if (-not [string]::IsNullOrEmpty($OutDir) -and -not (Test-Path -PathType Any "$(
     (Get-Item -path "$($OutDir)\downloaded_low.txt").Attributes += "Hidden"
 }
 
-if (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not (Test-Path -PathType Any "$($IntermediateDir)")) { 
-    New-Item -ItemType Directory -Path "$($IntermediateDir)"
-}
-
 #if (-not [string]::IsNullOrEmpty($OutDir)) {
 #    Set-Location $OutDir
 #}
