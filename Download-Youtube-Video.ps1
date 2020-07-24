@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param (
     [string]$ConfigFile="z:\videos\720p.conf",
-    [Alias("Out","OutputDirectory")]
+    [Alias("o","Out","OutputDirectory")]
     [string]$OutDir,
     [string]$IntermediateDir,
     [Parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true)]
@@ -28,6 +28,9 @@ if (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not (Test-Path -PathTyp
 #    Set-Location $IntermediateDir
 #}
 if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
+    if (-not (Test-Path -PathType Any "$($IntermediateDir)")) {
+        New-Item -ItemType Directory -Path "$($IntermediateDir)"
+    }
     Set-Location $IntermediateDir
     
     if (-not (Test-Path -PathType Any "$($IntermediateDir)\downloaded_ps.txt")){
