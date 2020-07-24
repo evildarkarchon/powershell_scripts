@@ -12,9 +12,9 @@ Set-Location $IntermediateDir
 
 if (-not (Test-Path -PathType Any "Z:\Videos\Twitch\$($Streamer)")) { 
     New-Item -ItemType Directory -Path "Z:\Videos\Twitch\$($Streamer)" -Force
-    New-Item -ItemType File -Path "Z:\Videos\Twitch\$($Streamer)\downloaded.txt" -Force
+    New-Item -ItemType File -Path "Z:\Videos\Twitch\$($Streamer)\downloaded.txt"
     (Get-Item -path "Z:\Videos\Twitch\$($Streamer)\downloaded.txt").Attributes += "Hidden"
-    New-Item -ItemType File -Path "Z:\Videos\Twitch\$($Streamer)\downloaded_low.txt" -Force
+    New-Item -ItemType File -Path "Z:\Videos\Twitch\$($Streamer)\downloaded_low.txt"
     (Get-Item -path "Z:\Videos\Twitch\$($Streamer)\downloaded_low.txt").Attributes += "Hidden"
 }
 

@@ -22,7 +22,7 @@ if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
     Set-Location $IntermediateDir
     
     if (-not (Test-Path -PathType Any "$($IntermediateDir)\downloaded_ps.txt")){
-        New-Item -ItemType File -Path "$($IntermediateDir)\downloaded_ps.txt" -Force
+        New-Item -ItemType File -Path "$($IntermediateDir)\downloaded_ps.txt"
         (Get-Item -path "$($IntermediateDir)\downloaded_ps.txt").Attributes += "Hidden"
     }
     
@@ -32,9 +32,9 @@ else {
     if (-not [string]::IsNullOrEmpty($OutDir)) {
         if (-not (Test-Path -PathType Any "$($OutDir)")) {
             New-Item -ItemType Directory -Path "$($OutDir)" -Force
-            New-Item -ItemType File -Path "$($OutDir)\downloaded.txt" -Force
+            New-Item -ItemType File -Path "$($OutDir)\downloaded.txt"
             (Get-Item -path "$($OutDir)\downloaded.txt").Attributes += "Hidden"
-            New-Item -ItemType File -Path "$($OutDir)\downloaded_low.txt" -Force
+            New-Item -ItemType File -Path "$($OutDir)\downloaded_low.txt"
             (Get-Item -path "$($OutDir)\downloaded_low.txt").Attributes += "Hidden"
         }
         Set-Location $OutDir
