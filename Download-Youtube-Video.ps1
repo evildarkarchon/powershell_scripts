@@ -9,14 +9,6 @@ param (
 )
 $PreviousLocation = Get-Location
 
-if (-not [string]::IsNullOrEmpty($OutDir) -and -not (Test-Path -PathType Any "$($Outdir)")) { 
-    New-Item -ItemType Directory -Path "$($OutDir)"
-    New-Item -ItemType File -Path "$($OutDir)\downloaded.txt"
-    (Get-Item -path "$($OutDir)\downloaded.txt").Attributes += "Hidden"
-    New-Item -ItemType File -Path "$($OutDir)\downloaded_low.txt"
-    (Get-Item -path "$($OutDir)\downloaded_low.txt").Attributes += "Hidden"
-}
-
 #if (-not [string]::IsNullOrEmpty($OutDir)) {
 #    Set-Location $OutDir
 #}
@@ -38,6 +30,13 @@ if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
 }
 else {
     if (-not [string]::IsNullOrEmpty($OutDir)) {
+        if (-not (Test-Path -PathType Any "$($OutDir)")) {
+            New-Item -ItemType Directory -Path "$($OutDir)"
+            New-Item -ItemType File -Path "$($OutDir)\downloaded.txt"
+            (Get-Item -path "$($OutDir)\downloaded.txt").Attributes += "Hidden"
+            New-Item -ItemType File -Path "$($OutDir)\downloaded_low.txt"
+            (Get-Item -path "$($OutDir)\downloaded_low.txt").Attributes += "Hidden"
+        }
         Set-Location $OutDir
     }
     
