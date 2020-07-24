@@ -21,7 +21,7 @@ if (-not (Test-Path -PathType Any "Z:\Videos\Twitch\$($Streamer)")) {
 youtube-dl --config-location $ConfigFile --download-archive "z:\Videos\Twitch\$($Streamer)\downloaded.txt" $Urls
 
 foreach ($file in Get-ChildItem $IntermediateDir) {
-    Write-Host "Moving '$($file.Name)' to 'Z:\Videos\Twitch\$($Streamer)\$($file.Name)'"
+    Write-Host "Moving '$($IntermediateDir)\$($file.Name)' to 'Z:\Videos\Twitch\$($Streamer)\$($file.Name)'"
     Move-item -Path $file.Name -Destination "z:\Videos\Twitch\$($Streamer)\$($file.Name)"
 }
 Set-Location $PreviousDirectory
