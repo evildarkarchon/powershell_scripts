@@ -23,7 +23,7 @@ if ($Force) {
     youtube-dl --config-location "Z:\Videos\$($Quality)_force.conf" $Urls
 }
 else {
-    youtube-dl --config-location "Z:\Videos\$($Quality).conf" --download-archive "z:\Videos\Twitch\$($Streamer)\downloaded.txt" $Urls
+    youtube-dl --config-location "Z:\Videos\$($Quality).conf" --download-archive "Z:\Videos\Twitch\$($Streamer)\downloaded.txt" $Urls
 }
 
 foreach ($file in Get-ChildItem $IntermediateDir) {
