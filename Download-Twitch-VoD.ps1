@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param (
-    [string]$ConfigFile="z:\Videos\480p.conf",
+    [string]$Quality="480p",
     [string]$IntermediateDir="D:\Video Downloads",
+    [switch]$Force,
     [Parameter(Mandatory=$true)]
     [string]$Streamer,
     [Parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true)]
@@ -18,7 +19,12 @@ if (-not (Test-Path -PathType Any "Z:\Videos\Twitch\$($Streamer)")) {
     (Get-Item -path "Z:\Videos\Twitch\$($Streamer)\downloaded_low.txt").Attributes += "Hidden"
 }
 
-youtube-dl --config-location $ConfigFile --download-archive "z:\Videos\Twitch\$($Streamer)\downloaded.txt" $Urls
+if ($Force) {
+    youtube-dl --config-location "Z:\Videos\$($Quality)_force.conf" $Urls
+}
+else {
+    youtube-dl --config-location "Z:\Videos\$($Quality).conf" --download-archive "z:\Videos\Twitch\$($Streamer)\downloaded.txt" $Urls
+}
 
 foreach ($file in Get-ChildItem $IntermediateDir) {
     Write-Host "Moving '$($IntermediateDir)\$($file.Name)' to 'Z:\Videos\Twitch\$($Streamer)\$($file.Name)'"
