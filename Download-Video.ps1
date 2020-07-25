@@ -9,51 +9,48 @@ param (
 )
 $PreviousLocation = Get-Location
 
-#if (-not [string]::IsNullOrEmpty($OutDir)) {
-#    Set-Location $OutDir
-#}
-#elseif (-not [string]::IsNullOrEmpty($IntermediateDir)) {
-#    Set-Location $IntermediateDir
-#}
-if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
-    if (-not (Test-Path -PathType Any "$($IntermediateDir)")) {
-        New-Item -ItemType Directory -Path "$($IntermediateDir)" -Force
-    }
-    Set-Location $IntermediateDir
-    
-    if (-not (Test-Path -PathType Any "$($IntermediateDir)\downloaded_ps.txt")){
-        New-Item -ItemType File -Path "$($IntermediateDir)\downloaded_ps.txt"
-        (Get-Item -path "$($IntermediateDir)\downloaded_ps.txt").Attributes += "Hidden"
-    }
-    
-    youtube-dl --config-location "$($ConfigFile)" --download-archive "$($IntermediateDir)\downloaded_ps.txt" $Urls
-}
-else {
-    if (-not [string]::IsNullOrEmpty($OutDir)) {
-        if (-not (Test-Path -PathType Any "$($OutDir)")) {
-            New-Item -ItemType Directory -Path "$($OutDir)" -Force
-            New-Item -ItemType File -Path "$($OutDir)\downloaded.txt"
-            (Get-Item -path "$($OutDir)\downloaded.txt").Attributes += "Hidden"
-            New-Item -ItemType File -Path "$($OutDir)\downloaded_low.txt"
-            (Get-Item -path "$($OutDir)\downloaded_low.txt").Attributes += "Hidden"
+try {
+    if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
+        if (-not (Test-Path -PathType Any "$($IntermediateDir)")) {
+            New-Item -ItemType Directory -Path "$($IntermediateDir)" -Force
         }
-        Set-Location $OutDir
+        Set-Location $IntermediateDir
+        
+        if (-not (Test-Path -PathType Any "$($IntermediateDir)\downloaded_ps.txt")){
+            New-Item -ItemType File -Path "$($IntermediateDir)\downloaded_ps.txt"
+            (Get-Item -path "$($IntermediateDir)\downloaded_ps.txt").Attributes += "Hidden"
+        }
+        
+        youtube-dl --config-location "$($ConfigFile)" --download-archive "$($IntermediateDir)\downloaded_ps.txt" $Urls
+    }
+    else {
+        if (-not [string]::IsNullOrEmpty($OutDir)) {
+            if (-not (Test-Path -PathType Any "$($OutDir)")) {
+                New-Item -ItemType Directory -Path "$($OutDir)" -Force
+                New-Item -ItemType File -Path "$($OutDir)\downloaded.txt"
+                (Get-Item -path "$($OutDir)\downloaded.txt").Attributes += "Hidden"
+                New-Item -ItemType File -Path "$($OutDir)\downloaded_low.txt"
+                (Get-Item -path "$($OutDir)\downloaded_low.txt").Attributes += "Hidden"
+            }
+            Set-Location $OutDir
+        }
+        
+        youtube-dl --config-location "$($ConfigFile)" $Urls
     }
     
-    youtube-dl --config-location "$($ConfigFile)" $Urls
-}
-
-if (-not [string]::IsNullOrEmpty($IntermediateDir) -and [string]::IsNullOrEmpty($OutDir)) {
-    foreach ($file in Get-ChildItem $IntermediateDir -Exclude "downloaded_ps.txt") {
-        Write-Host "'Moving $($file.Name)' to '$($PreviousLocation)\$($file.Name)"
-        Move-Item "$($file.Name)" "$($PreviousLocation)\$($file.Name)"
+    if (-not [string]::IsNullOrEmpty($IntermediateDir) -and [string]::IsNullOrEmpty($OutDir)) {
+        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "downloaded_ps.txt") {
+            Write-Host "'Moving $($file.Name)' to '$($PreviousLocation)\$($file.Name)"
+            Move-Item "$($file.Name)" "$($PreviousLocation)\$($file.Name)"
+        }
+    }
+    elseif (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not [string]::IsNullOrEmpty($OutDir)) {
+        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "downloaded_ps.txt") {
+            Write-Host "'Moving $($file.Name)' to '$($OutDir)\$($file.Name)"
+            Move-Item "$($file.Name)" "$($OutDir)\$($file.Name)"
+        }
     }
 }
-elseif (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not [string]::IsNullOrEmpty($OutDir)) {
-    foreach ($file in Get-ChildItem $IntermediateDir -Exclude "downloaded_ps.txt") {
-        Write-Host "'Moving $($file.Name)' to '$($OutDir)\$($file.Name)"
-        Move-Item "$($file.Name)" "$($OutDir)\$($file.Name)"
-    }
+finally {
+    Set-Location $PreviousLocation
 }
-
-Set-Location $PreviousLocation
