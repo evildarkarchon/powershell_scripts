@@ -23,10 +23,10 @@ try {
         }
         
         if ($Force) {
-            youtube-dl --config-location "$($ConfigFile)" --download-archive "$($IntermediateDir)\downloaded_ps.txt" $Urls
+            youtube-dl --config-location "$($ConfigFile)" $Urls
         }
         else {
-            youtube-dl --config-location "$($ConfigFile)" $Urls
+            youtube-dl --config-location "$($ConfigFile)" --download-archive "$($IntermediateDir)\downloaded_ps.txt" $Urls
         }
         
     }
