@@ -2,6 +2,7 @@
 param (
     [string]$ConfigFile="z:\videos\720p.conf",
     [Alias("o","Out","OutputDirectory")]
+    [switch]$Force,
     [string]$OutDir,
     [string]$IntermediateDir,
     [Parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true)]
@@ -16,12 +17,18 @@ try {
         }
         Set-Location $IntermediateDir
         
-        if (-not (Test-Path -PathType Any "$($IntermediateDir)\downloaded_ps.txt")){
+        if (-not (Test-Path -PathType Any "$($IntermediateDir)\downloaded_ps.txt") -and -not $Force){
             New-Item -ItemType File -Path "$($IntermediateDir)\downloaded_ps.txt"
             (Get-Item -path "$($IntermediateDir)\downloaded_ps.txt").Attributes += "Hidden"
         }
         
-        youtube-dl --config-location "$($ConfigFile)" --download-archive "$($IntermediateDir)\downloaded_ps.txt" $Urls
+        if ($Force) {
+            youtube-dl --config-location "$($ConfigFile)" --download-archive "$($IntermediateDir)\downloaded_ps.txt" $Urls
+        }
+        else {
+            youtube-dl --config-location "$($ConfigFile)" $Urls
+        }
+        
     }
     else {
         if (-not [string]::IsNullOrEmpty($OutDir)) {
