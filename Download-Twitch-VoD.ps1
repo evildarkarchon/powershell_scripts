@@ -4,7 +4,6 @@ param (
     [string]$IntermediateDir="D:\Video Downloads",
     [switch]$Force,
     [switch]$ListFormats,
-    [Parameter(Mandatory=$true)]
     [string]$Streamer,
     [Parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true)]
     [string[]]$Urls
