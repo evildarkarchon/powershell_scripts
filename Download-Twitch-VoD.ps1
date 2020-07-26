@@ -12,7 +12,7 @@ param (
 $PreviousDirectory = Get-Location
 try {
     if ($ListFormats) {
-        youtube-dl --list-formsts $Urls
+        youtube-dl --list-formats $Urls
     }
     else {
         if (-not (Test-Path -PathType Any $IntermediateDir)) {
