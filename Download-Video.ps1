@@ -9,7 +9,6 @@ param (
     [string[]]$Urls
 )
 $PreviousLocation = Get-Location
-write-host $OutDir
 try {
     if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
         if (-not (Test-Path -PathType Any "$($IntermediateDir)")) {
