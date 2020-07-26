@@ -41,7 +41,7 @@ try {
         }
         Set-Location $OutDir
         youtube-dl --config-location "$($ConfigFile)" $Urls
-   }
+    }
     else {
         youtube-dl --config-location "$($ConfigFile)" $Urls
     }
