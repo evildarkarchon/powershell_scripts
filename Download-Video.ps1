@@ -2,6 +2,7 @@
 param (
     [string]$ConfigFile="z:\videos\720p.conf",
     [switch]$Force,
+    [switch]$ListFormats,
     [Alias("o","Out","OutputDirectory")]
     [string]$OutDir,
     [string]$IntermediateDir,
@@ -10,7 +11,7 @@ param (
 )
 $PreviousLocation = Get-Location
 try {
-    if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
+    if (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not $ListFormats) {
         if (-not (Test-Path -PathType Any "$($IntermediateDir)")) {
             New-Item -ItemType Directory -Path "$($IntermediateDir)" -Force
         }
@@ -29,7 +30,7 @@ try {
         }
         
     }
-    elseif (-not [string]::IsNullOrEmpty($OutDir)){
+    elseif (-not [string]::IsNullOrEmpty($OutDir) -and -not $ListFormats){
         if (-not (Test-Path -PathType Any "$($OutDir)")) {
             New-Item -ItemType Directory -Path "$($OutDir)" -Force
             if (-not $Force) {
@@ -42,17 +43,20 @@ try {
         Set-Location $OutDir
         youtube-dl --config-location "$($ConfigFile)" $Urls
     }
+    elseif ($ListFormats) {
+        youtube-dl --list-formats $Urls
+    }
     else {
         youtube-dl --config-location "$($ConfigFile)" $Urls
     }
     
-    if (-not [string]::IsNullOrEmpty($IntermediateDir) -and [string]::IsNullOrEmpty($OutDir)) {
+    if (-not [string]::IsNullOrEmpty($IntermediateDir) -and [string]::IsNullOrEmpty($OutDir) -and -not $ListFormats) {
         foreach ($file in Get-ChildItem $IntermediateDir -Exclude "downloaded_ps.txt") {
             Write-Host "'Moving $($file.Name)' to '$($PreviousLocation)\$($file.Name)"
             Move-Item "$($file.Name)" "$($PreviousLocation)\$($file.Name)"
         }
     }
-    elseif (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not [string]::IsNullOrEmpty($OutDir)) {
+    elseif (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not [string]::IsNullOrEmpty($OutDir) -and -not $ListFormats) {
         foreach ($file in Get-ChildItem $IntermediateDir -Exclude "downloaded_ps.txt") {
             Write-Host "'Moving $($file.Name)' to '$($OutDir)\$($file.Name)"
             Move-Item "$($file.Name)" "$($OutDir)\$($file.Name)"
