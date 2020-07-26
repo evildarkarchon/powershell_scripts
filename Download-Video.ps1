@@ -1,15 +1,15 @@
 [CmdletBinding()]
 param (
     [string]$ConfigFile="z:\videos\720p.conf",
-    [Alias("o","Out","OutputDirectory")]
     [switch]$Force,
+    [Alias("o","Out","OutputDirectory")]
     [string]$OutDir,
     [string]$IntermediateDir,
     [Parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true)]
     [string[]]$Urls
 )
 $PreviousLocation = Get-Location
-
+write-host $OutDir
 try {
     if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
         if (-not (Test-Path -PathType Any "$($IntermediateDir)")) {
@@ -30,21 +30,20 @@ try {
         }
         
     }
-    else {
-        if (-not [string]::IsNullOrEmpty($OutDir)) {
-            if (-not (Test-Path -PathType Any "$($OutDir)")) {
-                New-Item -ItemType Directory -Path "$($OutDir)" -Force
-                if (-not $Force) {
-                    New-Item -ItemType File -Path "$($OutDir)\downloaded.txt"
-                    (Get-Item -path "$($OutDir)\downloaded.txt").Attributes += "Hidden"
-                    New-Item -ItemType File -Path "$($OutDir)\downloaded_low.txt"
-                    (Get-Item -path "$($OutDir)\downloaded_low.txt").Attributes += "Hidden"
-                }
-                
-            }
-            Set-Location $OutDir
+    elseif (-not [string]::IsNullOrEmpty($OutDir)){
+        if (-not (Test-Path -PathType Any "$($OutDir)")) {
+            New-Item -ItemType Directory -Path "$($OutDir)" -Force
+            if (-not $Force) {
+                New-Item -ItemType File -Path "$($OutDir)\downloaded.txt"
+                (Get-Item -path "$($OutDir)\downloaded.txt").Attributes += "Hidden"
+                New-Item -ItemType File -Path "$($OutDir)\downloaded_low.txt"
+                (Get-Item -path "$($OutDir)\downloaded_low.txt").Attributes += "Hidden"
+            } 
         }
-        
+        Set-Location $OutDir
+        youtube-dl --config-location "$($ConfigFile)" $Urls
+   }
+    else {
         youtube-dl --config-location "$($ConfigFile)" $Urls
     }
     
