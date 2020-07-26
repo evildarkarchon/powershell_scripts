@@ -1,10 +1,15 @@
 [CmdletBinding()]
 param (
+    [Parameter(ParameterSetName="Download")]
     [string]$ConfigFile="z:\videos\720p.conf",
+    [Parameter(ParameterSetName="Download")]
     [switch]$Force,
+    [Parameter(ParameterSetName="Test")]
     [switch]$ListFormats,
     [Alias("o","Out","OutputDirectory")]
+    [Parameter(ParameterSetName="Download")]
     [string]$OutDir,
+    [Parameter(ParameterSetName="Download")]
     [string]$IntermediateDir,
     [Parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true)]
     [string[]]$Urls

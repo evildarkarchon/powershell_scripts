@@ -1,9 +1,14 @@
-[CmdletBinding()]
+[CmdletBinding(DefaultParameterSetName="Download")]
 param (
+    [Parameter(ParameterSetName="Download")]
     [string]$Quality="480p",
+    [Parameter(ParameterSetName="Download")]
     [string]$IntermediateDir="D:\Video Downloads",
+    [Parameter(ParameterSetName="Download")]
     [switch]$Force,
+    [Parameter(ParameterSetName="Test")]
     [switch]$ListFormats,
+    [Parameter(ParameterSetName="Download")]
     [string]$Streamer,
     [Parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true)]
     [string[]]$Urls
