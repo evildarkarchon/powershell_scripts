@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param (
-    [Alias("o","Out","OutName")]
+    [Alias("o","Out")]
     [string]$outname,
     [string]$format = "kfx",
     [Parameter(Position=0, Mandatory=$true, ValueFromRemainingArguments=$true)]

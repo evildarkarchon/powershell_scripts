@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param (
-    [Alias("o","OutName","Out")]
+    [Alias("o","Out")]
     [string]$outname,
     [Parameter(Position=0, Mandatory=$true, ValueFromRemainingArguments=$true)]
     [string[]]$paths
