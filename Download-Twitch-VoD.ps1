@@ -9,6 +9,7 @@ param (
     [Parameter(ParameterSetName="Test")]
     [switch]$ListFormats,
     [Parameter(ParameterSetName="Download")]
+    [Parameter(Mandatory=$true)]
     [string]$Streamer,
     [Parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true)]
     [string[]]$Urls
