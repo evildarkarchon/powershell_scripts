@@ -8,8 +8,7 @@ param (
     [switch]$Force,
     [Parameter(ParameterSetName="Test")]
     [switch]$ListFormats,
-    [Parameter(ParameterSetName="Download")]
-    [Parameter(Mandatory=$true)]
+    [Parameter(ParameterSetName="Download", Mandatory=$true)]
     [string]$Streamer,
     [Parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true)]
     [string[]]$Urls
