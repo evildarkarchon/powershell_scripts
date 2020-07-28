@@ -69,7 +69,7 @@ try {
     }
     
     if (-not [string]::IsNullOrEmpty($IntermediateDir) -and [string]::IsNullOrEmpty($OutDir) -and -not $ListFormats) {
-        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "downloaded_ps.txt" -Exclude "*.ytdl","*.part") {
+        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "downloaded_ps.txt","*.ytdl","*.part") {
             Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' to '$($PreviousLocation)\$($file.Name)'"
             Move-Item "$($IntermediateDir)\$($file.Name)" "$($PreviousLocation)\$($file.Name)"
             if (Test-Path $file -PathType Any) {
@@ -78,7 +78,7 @@ try {
         }
     }
     elseif (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not [string]::IsNullOrEmpty($OutDir) -and -not $ListFormats) {
-        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "downloaded_ps.txt" -Exclude "*.ytdl","*.part") {
+        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "downloaded_ps.txt","*.ytdl","*.part") {
             Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' to '$($OutDir)\$($file.Name)"
             Move-Item "$($IntermediateDir)\$($file.Name)" "$($OutDir)\$($file.Name)"
             if (Test-Path $file -PathType Any) {
