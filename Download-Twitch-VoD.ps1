@@ -46,7 +46,7 @@ try {
             }
         }
     
-        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "*.ytdl" -Exclude "*.part") {
+        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "*.ytdl","*.part") {
             if ($Streamer.ToLower() -eq "none") {
                 Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' to 'Z:\Videos\Twitch\$($file.Name)'"
                 Move-item -Path $file.Name -Destination "z:\Videos\Twitch\$($file.Name)"
