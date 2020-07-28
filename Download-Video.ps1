@@ -20,6 +20,15 @@ try {
         if (-not (Test-Path -PathType Any "$($IntermediateDir)")) {
             New-Item -ItemType Directory -Path "$($IntermediateDir)" -Force
         }
+        if (-not (Test-Path -PathType Any "$($OutDir)") -and -not [string]::IsNullOrEmpty($OutDir)) {
+            New-Item -ItemType Directory -Path "$($OutDir)" -Force
+            if (-not $Force) {
+                New-Item -ItemType File -Path "$($OutDir)\downloaded.txt"
+                (Get-Item -path "$($OutDir)\downloaded.txt").Attributes += "Hidden"
+                New-Item -ItemType File -Path "$($OutDir)\downloaded_low.txt"
+                (Get-Item -path "$($OutDir)\downloaded_low.txt").Attributes += "Hidden"
+            }
+        } 
         Set-Location $IntermediateDir
         
         if (-not (Test-Path -PathType Any "$($IntermediateDir)\downloaded_ps.txt") -and -not $Force){
@@ -31,9 +40,13 @@ try {
             youtube-dl --config-location "$($ConfigFile)" $Urls
         }
         else {
-            youtube-dl --config-location "$($ConfigFile)" --download-archive "$($IntermediateDir)\downloaded_ps.txt" $Urls
+            if (-not [string]::IsNullOrEmpty($OutDir)) {
+                youtube-dl --config-location "$($ConfigFile)" --download-archive "$($OutDir)\downloaded.txt" $Urls
+            }
+            else {
+                youtube-dl --config-location "$($ConfigFile)" --download-archive "$($IntermediateDir)\downloaded_ps.txt" $Urls
+            }
         }
-        
     }
     elseif (-not [string]::IsNullOrEmpty($OutDir) -and -not $ListFormats){
         if (-not (Test-Path -PathType Any "$($OutDir)")) {
@@ -56,15 +69,21 @@ try {
     }
     
     if (-not [string]::IsNullOrEmpty($IntermediateDir) -and [string]::IsNullOrEmpty($OutDir) -and -not $ListFormats) {
-        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "downloaded_ps.txt") {
-            Write-Host "[powershell] Moving '$($file.Name)' to '$($PreviousLocation)\$($file.Name)'"
-            Move-Item "$($file.Name)" "$($PreviousLocation)\$($file.Name)"
+        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "downloaded_ps.txt" -Exclude "*.ytdl" -Exclude "*.part") {
+            Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' to '$($PreviousLocation)\$($file.Name)'"
+            Move-Item "$($IntermediateDir)\$($file.Name)" "$($PreviousLocation)\$($file.Name)"
+            if (Test-Path $file -PathType Any) {
+                Remove-Item -Force $file
+            }
         }
     }
     elseif (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not [string]::IsNullOrEmpty($OutDir) -and -not $ListFormats) {
-        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "downloaded_ps.txt") {
-            Write-Host "[powershell] Moving '$($file.Name)' to '$($OutDir)\$($file.Name)"
-            Move-Item "$($file.Name)" "$($OutDir)\$($file.Name)"
+        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "downloaded_ps.txt" -Exclude "*.ytdl" -Exclude "*.part") {
+            Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' to '$($OutDir)\$($file.Name)"
+            Move-Item "$($IntermediateDir)\$($file.Name)" "$($OutDir)\$($file.Name)"
+            if (Test-Path $file -PathType Any) {
+                Remove-Item -Force $file
+            }
         }
     }
 }
