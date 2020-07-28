@@ -24,7 +24,7 @@ try {
         }
         Set-Location $IntermediateDir
     
-        if (-not (Test-Path -PathType Any "Z:\Videos\Twitch\$($Streamer)")) { 
+        if (-not $Streamer.ToLower() -eq "none" -and -not (Test-Path -PathType Any "Z:\Videos\Twitch\$($Streamer)")) { 
             New-Item -ItemType Directory -Path "Z:\Videos\Twitch\$($Streamer)" -Force
             if (-not $Force) {
                 New-Item -ItemType File -Path "Z:\Videos\Twitch\$($Streamer)\downloaded.txt"
@@ -38,12 +38,23 @@ try {
             youtube-dl --config-location "Z:\Videos\$($Quality)_force.conf" $Urls
         }
         else {
-            youtube-dl --config-location "Z:\Videos\$($Quality).conf" --download-archive "Z:\Videos\Twitch\$($Streamer)\downloaded.txt" $Urls
+            if ($Streamer.ToLower() -eq "none") {
+                youtube-dl --config-location "Z:\Videos\$($Quality).conf" --download-archive "Z:\Videos\Twitch\downloaded.txt" $Urls
+            }
+            else {
+                youtube-dl --config-location "Z:\Videos\$($Quality).conf" --download-archive "Z:\Videos\Twitch\$($Streamer)\downloaded.txt" $Urls
+            }
         }
     
-        foreach ($file in Get-ChildItem $IntermediateDir) {
-            Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' to 'Z:\Videos\Twitch\$($Streamer)\$($file.Name)'"
-            Move-item -Path $file.Name -Destination "z:\Videos\Twitch\$($Streamer)\$($file.Name)"
+        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "*.ytdl" -Exclude "*.part") {
+            if ($Streamer.ToLower() -eq "none") {
+                Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' to 'Z:\Videos\Twitch\$($file.Name)'"
+                Move-item -Path $file.Name -Destination "z:\Videos\Twitch\$($file.Name)"
+            }
+            else {
+                Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' to 'Z:\Videos\Twitch\$($Streamer)\$($file.Name)'"
+                Move-item -Path $file.Name -Destination "z:\Videos\Twitch\$($Streamer)\$($file.Name)"
+            }
         }
     }
 }
