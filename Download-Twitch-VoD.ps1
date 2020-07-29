@@ -46,14 +46,14 @@ try {
             }
         }
     
-        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "*.ytdl","*.part") {
+        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "*.ytdl","*.part","*.txt") {
             if ($Streamer.ToLower() -eq "none") {
                 Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' to 'Z:\Videos\Twitch\$($file.Name)'"
-                Move-item -Path $file.Name -Destination "z:\Videos\Twitch\$($file.Name)"
+                Move-item -LiteralPath "$($IntermediateDir)\$($file.Name)" -Destination "z:\Videos\Twitch\$($file.Name)"
             }
             else {
                 Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' to 'Z:\Videos\Twitch\$($Streamer)\$($file.Name)'"
-                Move-item -Path $file.Name -Destination "z:\Videos\Twitch\$($Streamer)\$($file.Name)"
+                Move-item -LiteralPath "$($IntermediateDir)\$($file.Name)" -Destination "z:\Videos\Twitch\$($Streamer)\$($file.Name)"
             }
         }
     }

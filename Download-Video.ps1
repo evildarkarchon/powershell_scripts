@@ -18,22 +18,22 @@ $PreviousLocation = Get-Location
 try {
     if (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not $ListFormats) {
         if (-not (Test-Path -PathType Any "$($IntermediateDir)")) {
-            New-Item -ItemType Directory -Path "$($IntermediateDir)" -Force
+            New-Item -ItemType Directory -LiteralPath "$($IntermediateDir)" -Force
         }
         if (-not (Test-Path -PathType Any "$($OutDir)") -and -not [string]::IsNullOrEmpty($OutDir)) {
-            New-Item -ItemType Directory -Path "$($OutDir)" -Force
+            New-Item -ItemType Directory -LiteralPath "$($OutDir)" -Force
             if (-not $Force) {
-                New-Item -ItemType File -Path "$($OutDir)\downloaded.txt"
-                (Get-Item -path "$($OutDir)\downloaded.txt").Attributes += "Hidden"
-                New-Item -ItemType File -Path "$($OutDir)\downloaded_low.txt"
-                (Get-Item -path "$($OutDir)\downloaded_low.txt").Attributes += "Hidden"
+                New-Item -ItemType File -LiteralPath "$($OutDir)\downloaded.txt"
+                (Get-Item -LiteralPath "$($OutDir)\downloaded.txt").Attributes += "Hidden"
+                New-Item -ItemType File -LiteralPath "$($OutDir)\downloaded_low.txt"
+                (Get-Item -LiteralPath "$($OutDir)\downloaded_low.txt").Attributes += "Hidden"
             }
         } 
         Set-Location $IntermediateDir
         
         if (-not (Test-Path -PathType Any "$($IntermediateDir)\downloaded_ps.txt") -and -not $Force){
-            New-Item -ItemType File -Path "$($IntermediateDir)\downloaded_ps.txt"
-            (Get-Item -path "$($IntermediateDir)\downloaded_ps.txt").Attributes += "Hidden"
+            New-Item -ItemType File -LiteralPath "$($IntermediateDir)\downloaded_ps.txt"
+            (Get-Item -LiteralPath "$($IntermediateDir)\downloaded_ps.txt").Attributes += "Hidden"
         }
         
         if ($Force) {
@@ -69,18 +69,18 @@ try {
     }
     
     if (-not [string]::IsNullOrEmpty($IntermediateDir) -and [string]::IsNullOrEmpty($OutDir) -and -not $ListFormats) {
-        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "downloaded_ps.txt","*.ytdl","*.part") {
+        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "*.txt","*.ytdl","*.part") {
             Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' to '$($PreviousLocation)\$($file.Name)'"
-            Move-Item "$($IntermediateDir)\$($file.Name)" "$($PreviousLocation)\$($file.Name)"
+            Move-Item -LiteralPath "$($IntermediateDir)\$($file.Name)" -Destination "$($PreviousLocation)\$($file.Name)"
             if (Test-Path $file -PathType Any) {
                 Remove-Item -Force $file
             }
         }
     }
     elseif (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not [string]::IsNullOrEmpty($OutDir) -and -not $ListFormats) {
-        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "downloaded_ps.txt","*.ytdl","*.part") {
+        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "*.txt","*.ytdl","*.part") {
             Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' to '$($OutDir)\$($file.Name)"
-            Move-Item "$($IntermediateDir)\$($file.Name)" "$($OutDir)\$($file.Name)"
+            Move-Item -LiteralPath "$($IntermediateDir)\$($file.Name)" -Destination "$($OutDir)\$($file.Name)"
             if (Test-Path $file -PathType Any) {
                 Remove-Item -Force $file
             }
