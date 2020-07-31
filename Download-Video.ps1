@@ -1,3 +1,4 @@
+using namespace System.Collections.Generic
 [CmdletBinding(DefaultParameterSetName="Download")]
 param (
     [Parameter(ParameterSetName="Batch")]
@@ -22,7 +23,15 @@ param (
     [string[]]$Urls
 )
 $PreviousLocation = Get-Location
+function YoutubeDL {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string[]]$Options
+    )
+    youtube-dl $Options
+}
 try {
+    $YtDlOptions = [List[string]]::new()
     if (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not $ListFormats) {
         if (-not (Test-Path -PathType Any $IntermediateDir)) {
             New-Item -ItemType Directory -Path $IntermediateDir -Force
@@ -45,27 +54,54 @@ try {
         
         if ($Force) {
             if (-not [string]::IsNullOrEmpty($BatchFile)) {
-                youtube-dl --config-location $ConfigFile -a $BatchFile
+                # $YtDlOptions.AddRange(@("--config-location", [string]$ConfigFile, "-a", [string]$BatchFile))
+                foreach ($i in @("--config-location", $ConfigFile, "-a", $BatchFile)) {
+                    $YtDlOptions.Add($i)
+                }
+                # youtube-dl --config-location $ConfigFile -a $BatchFile
             }
             else {
-                youtube-dl --config-location $ConfigFile $Urls
+                #$YtDlOptions.AddRange(@("--config-location", [string]$ConfigFile))
+                foreach ($i in @("--config-location", $ConfigFile)) {
+                    $YtDlOptions.Add($i)
+                }
+                $YtDlOptions.AddRange($Urls)
+                # youtube-dl --config-location $ConfigFile $Urls
             }
         }
         else {
             if (-not [string]::IsNullOrEmpty($OutDir)) {
                 if (-not [string]::IsNullOrEmpty($BatchFile)) {
-                    youtube-dl --config-location $ConfigFile --download-archive "$($OutDir)\downloaded.txt" -a $BatchFile
+                    #$YtDlOptions.AddRange(@("--config-location", [string]$ConfigFile, "--download-archive", "$($OutDir)\downloaded.txt"), "-a", [string]$BatchFile))
+                    foreach ($i in @("--config-location", $ConfigFile, "--download-archive", "$($OutDir)\downloaded.txt", "-a", $BatchFile)) {
+                        $YtDlOptions.Add($i)
+                    }
+                    # youtube-dl --config-location $ConfigFile --download-archive "$($OutDir)\downloaded.txt" -a $BatchFile
                 }
                 else {
-                    youtube-dl --config-location $ConfigFile --download-archive "$($OutDir)\downloaded.txt" $Urls
+                    #$YtDlOptions.AddRange(@("--config-location", [string]$ConfigFile, "--download-archive", "$($OutDir)\downloaded.txt"))
+                    foreach ($i in @("--config-location", $ConfigFile, "--download-archive", "$($OutDir)\downloaded.txt")) {
+                        $YtDlOptions.Add($i)
+                    }
+                    $YtDlOptions.AddRange($Urls)
+                    # youtube-dl --config-location $ConfigFile --download-archive "$($OutDir)\downloaded.txt" $Urls
                 }
             }
             else {
                 if (-not [string]::IsNullOrEmpty($BatchFile)) {
-                    youtube-dl --config-location $ConfigFile --download-archive "$($IntermediateDir)\downloaded_ps.txt" -a $BatchFile
+                    #$YtDlOptions.AddRange(@("--config-location", [string]$ConfigFile, "--download-archive", "$($IntermediateDir)\downloaded_ps.txt"), "-a", [string]$BatchFile)
+                    foreach ($i in @("--config-location", $ConfigFile, "--download-archive", "$($IntermediateDir)\downloaded_ps.txt", "-a", $BatchFile)) {
+                        $YtDlOptions.Add($i)
+                    }
+                    # youtube-dl --config-location $ConfigFile --download-archive "$($IntermediateDir)\downloaded_ps.txt" -a $BatchFile
                 }
                 else {
-                    youtube-dl --config-location $ConfigFile --download-archive "$($IntermediateDir)\downloaded_ps.txt" $Urls
+                    #$YtDlOptions.AddRange(@("--config-location", $ConfigFile, "--download-archive", "$($IntermediateDir)\downloaded_ps.txt"))
+                    foreach ($i in @("--config-location", $ConfigFile, "--download-archive", "$($IntermediateDir)\downloaded_ps.txt")) {
+                        $YtDlOptions.Add($i)
+                    }
+                    $YtDlOptions.AddRange($Urls)
+                    # youtube-dl --config-location $ConfigFile --download-archive "$($IntermediateDir)\downloaded_ps.txt" $Urls
                 }
             }
         }
@@ -82,27 +118,55 @@ try {
         }
         Set-Location $OutDir
         if (-not [string]::IsNullOrEmpty($BatchFile)) {
-            youtube-dl --config-location $ConfigFile -a $BatchFile
+            # $YtDlOptions.AddRange(@("--config-location", [string]$ConfigFile, "-a", [string]$BatchFile))
+            foreach ($i in @("--config-location", $ConfigFile, "-a", $BatchFile)) {
+                $YtDlOptions.Add($i)
+            }
+            # youtube-dl --config-location $ConfigFile -a $BatchFile
         }
-        youtube-dl --config-location $ConfigFile $Urls
+        else {
+            #$YtDlOptions.AddRange(@("--config-location", [string]$ConfigFile))
+            foreach ($i in @("--config-location", $ConfigFile)) {
+                $YtDlOptions.Add($i)
+            }
+            $YtDlOptions.AddRange($Urls)
+            # youtube-dl --config-location $ConfigFile $Urls
+        }
     }
     elseif ($ListFormats) {
         if (-not [string]::IsNullOrEmpty($BatchFile)) {
-            youtube-dl --list-formats -a $BatchFile
+            #$YtDlOptions.AddRange(@("--list-formats", "-a", [string]$BatchFile))
+            foreach ($i in @("--list-formats", "-a", $BatchFile)) {
+                $YtDlOptions.Add($i)
+            }
+            # youtube-dl --list-formats -a $BatchFile
         }
         else {
-            youtube-dl --list-formats $Urls
+            $YtDlOptions.Add("--list-formats")
+            $YtDlOptions.AddRange($Urls)
+            # youtube-dl --list-formats $Urls
         }
     }
     else {
         if (-not [string]::IsNullOrEmpty($BatchFile)) {
-            youtube-dl --config-location $ConfigFile -a $BatchFile
+            #$YtDlOptions.AddRange(@("--config-location", [string]$ConfigFile, "-a", [string]$BatchFile))
+            foreach ($i in @("--config-location", $ConfigFile, "-a", $BatchFile)) {
+                $YtDlOptions.Add($i)
+            }
+            # youtube-dl --config-location $ConfigFile -a $BatchFile
         }
         else {
-            youtube-dl --config-location $ConfigFile $Urls
+            #$YtDlOptions.AddRange(@("--config-location", [string]$ConfigFile))
+            foreach ($i in @("--config-location", $ConfigFile)) {
+                $YtDlOptions.Add($i)
+            }
+            $YtDlOptions.AddRange($Urls)
+            # youtube-dl --config-location $ConfigFile $Urls
         }
     }
     
+    YoutubeDL($YtDlOptions.ToArray())
+
     if (-not [string]::IsNullOrEmpty($IntermediateDir) -and [string]::IsNullOrEmpty($OutDir) -and -not $ListFormats) {
         foreach ($file in Get-ChildItem $IntermediateDir -Exclude "*.txt","*.ytdl","*.part") {
             Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' to '$($PreviousLocation)\$($file.Name)'"
