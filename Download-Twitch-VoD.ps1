@@ -14,13 +14,16 @@ param (
     [switch]$ListFormats,
     [Parameter(ParameterSetName="Download", Mandatory=$true)]
     [Parameter(ParameterSetName="Batch", Mandatory=$true)]
+    [ValidateNotNullOrEmpty]
     [string]$Streamer,
     [switch]$Verbose,
     [Parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true, ParameterSetName="Download")]
     [Parameter(Mandatory=$false, ParameterSetName="Test")]
+    [ValidateNotNullOrEmpty]
     [string[]]$Urls,
     [Parameter(Mandatory=$true, ParameterSetName="Batch")]
     [Parameter(Mandatory=$false, ParameterSetName="Test")]
+    [ValidateNotNullOrEmpty]
     [string]$BatchFile
 )
 $PreviousDirectory = Get-Location
@@ -36,16 +39,13 @@ try {
     if ($Verbose) { $YtDlOptions.Add("--verbose") }
     if ($ListFormats) {
         if (-not [string]::IsNullOrEmpty($BatchFile)){
-            #$YtDlOptions.AddRange(@("--list-formats", "-a", $BatchFile))
             foreach ($i in @("--list-formats", "-a", $BatchFile)) {
                 $YtDlOptions.Add($i)
             }
-            # youtube-dl --list-formats -a $BatchFile
         }
         else {
             $YtDlOptions.Add("--list-formats")
             $YtDlOptions.AddRange($Urls)
-            # youtube-dl --list-formats $Urls
         }
     }
     else {
@@ -70,54 +70,42 @@ try {
     
         if ($Force) {
             if (-not [string]::IsNullOrEmpty($BatchFile)) {
-                #$YtDlOptions.AddRange(@("--config-location", "Z:\Videos\$($Quality)_force.conf", "-a", $BatchFile))
                 foreach ($i in @("--config-location", "Z:\Videos\$($Quality)_force.conf", "-a", $BatchFile)) {
                     $YtDlOptions.Add($i)
                 }
-                # youtube-dl --config-location "Z:\Videos\$($Quality)_force.conf" -a $BatchFile
             }
             else {
-                #$YtDlOptions.AddRange(@("--config-location", "Z:\Videos\$($Quality)_force.conf"))
                 foreach ($i in @("--config-location", "Z:\Videos\$($Quality)_force.conf")) {
                     $YtDlOptions.Add($i)
                 }
                 $YtDlOptions.AddRange($Urls)
-                # youtube-dl --config-location "Z:\Videos\$($Quality)_force.conf" $Urls
             }
         }
         else {
             if ($Streamer.ToLower() -eq "none") {
                 if (-not [string]::IsNullOrEmpty($BatchFile)) {
-                    #$YtDlOptions.AddRange(@("--config-location", "Z:\Videos\$($Quality).conf", "--download-archive", "Z:\Videos\Twitch\downloaded.txt", "-a", $BatchFile))
                     foreach ($i in @("--config-location", "Z:\Videos\$($Quality).conf", "--download-archive", "Z:\Videos\Twitch\downloaded.txt", "-a", $BatchFile)) {
                         $YtDlOptions.Add($i)
                     }
-                    # youtube-dl --config-location "Z:\Videos\$($Quality).conf" --download-archive "Z:\Videos\Twitch\downloaded.txt" -a $BatchFile
                 }
                 else {
-                    #$YtDlOptions.AddRange(@("--config-location", "Z:\Videos\$($Quality).conf", "--download-archive", "Z:\Videos\Twitch\downloaded.txt"))
                     foreach ($i in @("--config-location", "Z:\Videos\$($Quality).conf", "--download-archive", "Z:\Videos\Twitch\downloaded.txt")) {
                         $YtDlOptions.Add($i)
                     }
                     $YtDlOptions.AddRange($Urls)
-                    # youtube-dl --config-location "Z:\Videos\$($Quality).conf" --download-archive "Z:\Videos\Twitch\downloaded.txt" $Urls
                 } 
             }
             else {
                 if (-not [string]::IsNullOrEmpty($BatchFile)) {
-                    #$YtDlOptions.AddRange(@("--config-location", "Z:\Videos\$($Quality).conf", "--download-archive", "Z:\Videos\Twitch\$($Streamer)\downloaded.txt", "-a", $BatchFile))
                     foreach ($i in @("--config-location", "Z:\Videos\$($Quality).conf", "--download-archive", "Z:\Videos\Twitch\$($Streamer)\downloaded.txt", "-a", $BatchFile)) {
                         $YtDlOptions.Add($i)
                     }
-                    # youtube-dl --config-location "Z:\Videos\$($Quality).conf" --download-archive "Z:\Videos\Twitch\$($Streamer)\downloaded.txt" -a $BatchFile
                 }
                 else {
-                    #$YtDlOptions.AddRange(@("--config-location", "Z:\Videos\$($Quality).conf", "--download-archive", "Z:\Videos\Twitch\$($Streamer)\downloaded.txt"))
                     foreach ($i in @("--config-location", "Z:\Videos\$($Quality).conf", "--download-archive", "Z:\Videos\Twitch\$($Streamer)\downloaded.txt")) {
                         $YtDlOptions.Add($i)
                     }
                     $YtDlOptions.AddRange($Urls)
-                    # youtube-dl --config-location "Z:\Videos\$($Quality).conf" --download-archive "Z:\Videos\Twitch\$($Streamer)\downloaded.txt" $Urls
                 }
             }
         }
@@ -126,11 +114,11 @@ try {
 
         foreach ($file in Get-ChildItem $IntermediateDir -Exclude "*.ytdl","*.part","*.txt") {
             if ($Streamer.ToLower() -eq "none") {
-                Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' to 'Z:\Videos\Twitch\$($file.Name)'"
+                Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' -> 'Z:\Videos\Twitch\$($file.Name)'"
                 Move-item -LiteralPath "$($IntermediateDir)\$($file.Name)" -Destination "z:\Videos\Twitch\$($file.Name)"
             }
             else {
-                Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' to 'Z:\Videos\Twitch\$($Streamer)\$($file.Name)'"
+                Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' -> 'Z:\Videos\Twitch\$($Streamer)\$($file.Name)'"
                 Move-item -LiteralPath "$($IntermediateDir)\$($file.Name)" -Destination "z:\Videos\Twitch\$($Streamer)\$($file.Name)"
             }
         }
