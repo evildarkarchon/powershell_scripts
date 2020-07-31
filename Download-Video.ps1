@@ -1,27 +1,34 @@
-[CmdletBinding()]
+[CmdletBinding(DefaultParameterSetName="Download")]
 param (
+    [Parameter(ParameterSetName="Batch")]
     [Parameter(ParameterSetName="Download")]
     [string]$ConfigFile="z:\videos\720p.conf",
+    [Parameter(ParameterSetName="Batch")]
     [Parameter(ParameterSetName="Download")]
     [switch]$Force,
     [Parameter(ParameterSetName="Test")]
     [switch]$ListFormats,
-    [Alias("o","Out","OutputDirectory")]
+    [Parameter(ParameterSetName="Batch")]
     [Parameter(ParameterSetName="Download")]
     [string]$OutDir,
+    [Parameter(ParameterSetName="Batch")]
     [Parameter(ParameterSetName="Download")]
     [string]$IntermediateDir,
-    [Parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true)]
+    [Parameter(ParameterSetName="Batch")]
+    [Parameter(ParameterSetName="Test")]
+    [string]$BatchFile,
+    [Parameter(Position=0, ValueFromRemainingArguments=$true, ParameterSetName="Download")]
+    [Parameter(ParameterSetName="Test")]
     [string[]]$Urls
 )
 $PreviousLocation = Get-Location
 try {
     if (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not $ListFormats) {
-        if (-not (Test-Path -PathType Any "$($IntermediateDir)")) {
-            New-Item -ItemType Directory -Path "$($IntermediateDir)" -Force
+        if (-not (Test-Path -PathType Any $IntermediateDir)) {
+            New-Item -ItemType Directory -Path $IntermediateDir -Force
         }
-        if (-not (Test-Path -PathType Any "$($OutDir)") -and -not [string]::IsNullOrEmpty($OutDir)) {
-            New-Item -ItemType Directory -Path "$($OutDir)" -Force
+        if (-not (Test-Path -PathType Any $OutDir) -and -not [string]::IsNullOrEmpty($OutDir)) {
+            New-Item -ItemType Directory -Path $OutDir -Force
             if (-not $Force) {
                 New-Item -ItemType File -Path "$($OutDir)\downloaded.txt"
                 (Get-Item -LiteralPath "$($OutDir)\downloaded.txt").Attributes += "Hidden"
@@ -37,20 +44,35 @@ try {
         }
         
         if ($Force) {
-            youtube-dl --config-location "$($ConfigFile)" $Urls
+            if (-not [string]::IsNullOrEmpty($BatchFile)) {
+                youtube-dl --config-location $ConfigFile -a $BatchFile
+            }
+            else {
+                youtube-dl --config-location $ConfigFile $Urls
+            }
         }
         else {
             if (-not [string]::IsNullOrEmpty($OutDir)) {
-                youtube-dl --config-location "$($ConfigFile)" --download-archive "$($OutDir)\downloaded.txt" $Urls
+                if (-not [string]::IsNullOrEmpty($BatchFile)) {
+                    youtube-dl --config-location $ConfigFile --download-archive "$($OutDir)\downloaded.txt" -a $BatchFile
+                }
+                else {
+                    youtube-dl --config-location $ConfigFile --download-archive "$($OutDir)\downloaded.txt" $Urls
+                }
             }
             else {
-                youtube-dl --config-location "$($ConfigFile)" --download-archive "$($IntermediateDir)\downloaded_ps.txt" $Urls
+                if (-not [string]::IsNullOrEmpty($BatchFile)) {
+                    youtube-dl --config-location $ConfigFile --download-archive "$($IntermediateDir)\downloaded_ps.txt" -a $BatchFile
+                }
+                else {
+                    youtube-dl --config-location $ConfigFile --download-archive "$($IntermediateDir)\downloaded_ps.txt" $Urls
+                }
             }
         }
     }
     elseif (-not [string]::IsNullOrEmpty($OutDir) -and -not $ListFormats){
-        if (-not (Test-Path -PathType Any "$($OutDir)")) {
-            New-Item -ItemType Directory -Path "$($OutDir)" -Force
+        if (-not (Test-Path -PathType Any $OutDir)) {
+            New-Item -ItemType Directory -Path $OutDir -Force
             if (-not $Force) {
                 New-Item -ItemType File -Path "$($OutDir)\downloaded.txt"
                 (Get-Item -path "$($OutDir)\downloaded.txt").Attributes += "Hidden"
@@ -59,13 +81,26 @@ try {
             } 
         }
         Set-Location $OutDir
-        youtube-dl --config-location "$($ConfigFile)" $Urls
+        if (-not [string]::IsNullOrEmpty($BatchFile)) {
+            youtube-dl --config-location $ConfigFile -a $BatchFile
+        }
+        youtube-dl --config-location $ConfigFile $Urls
     }
     elseif ($ListFormats) {
-        youtube-dl --list-formats $Urls
+        if (-not [string]::IsNullOrEmpty($BatchFile)) {
+            youtube-dl --list-formats -a $BatchFile
+        }
+        else {
+            youtube-dl --list-formats $Urls
+        }
     }
     else {
-        youtube-dl --config-location "$($ConfigFile)" $Urls
+        if (-not [string]::IsNullOrEmpty($BatchFile)) {
+            youtube-dl --config-location $ConfigFile -a $BatchFile
+        }
+        else {
+            youtube-dl --config-location $ConfigFile $Urls
+        }
     }
     
     if (-not [string]::IsNullOrEmpty($IntermediateDir) -and [string]::IsNullOrEmpty($OutDir) -and -not $ListFormats) {
