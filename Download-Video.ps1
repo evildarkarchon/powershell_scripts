@@ -30,21 +30,28 @@ function YoutubeDL {
     )
     youtube-dl $Options
 }
+
+function New-Foundation {
+    if (-not (Test-Path -PathType Any $OutDir) -and -not [string]::IsNullOrEmpty($OutDir) -and -not $ListFormats) {
+        New-Item -ItemType Directory -Path $OutDir -Force
+        if (-not $Force) {
+            New-Item -ItemType File -Path "$($OutDir)\downloaded.txt"
+            (Get-Item -LiteralPath "$($OutDir)\downloaded.txt").Attributes += "Hidden"
+            New-Item -ItemType File -Path "$($OutDir)\downloaded_low.txt"
+            (Get-Item -LiteralPath "$($OutDir)\downloaded_low.txt").Attributes += "Hidden"
+        }
+    }
+}
+
 try {
     $YtDlOptions = [List[string]]::new()
     if (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not $ListFormats) {
         if (-not (Test-Path -PathType Any $IntermediateDir)) {
             New-Item -ItemType Directory -Path $IntermediateDir -Force
         }
-        if (-not (Test-Path -PathType Any $OutDir) -and -not [string]::IsNullOrEmpty($OutDir)) {
-            New-Item -ItemType Directory -Path $OutDir -Force
-            if (-not $Force) {
-                New-Item -ItemType File -Path "$($OutDir)\downloaded.txt"
-                (Get-Item -LiteralPath "$($OutDir)\downloaded.txt").Attributes += "Hidden"
-                New-Item -ItemType File -Path "$($OutDir)\downloaded_low.txt"
-                (Get-Item -LiteralPath "$($OutDir)\downloaded_low.txt").Attributes += "Hidden"
-            }
-        } 
+
+        New-Foundation
+
         Set-Location $IntermediateDir
         
         if (-not (Test-Path -PathType Any "$($IntermediateDir)\downloaded_ps.txt") -and -not $Force){
@@ -95,15 +102,18 @@ try {
         }
     }
     elseif (-not [string]::IsNullOrEmpty($OutDir) -and -not $ListFormats){
-        if (-not (Test-Path -PathType Any $OutDir)) {
-            New-Item -ItemType Directory -Path $OutDir -Force
-            if (-not $Force) {
-                New-Item -ItemType File -Path "$($OutDir)\downloaded.txt"
-                (Get-Item -path "$($OutDir)\downloaded.txt").Attributes += "Hidden"
-                New-Item -ItemType File -Path "$($OutDir)\downloaded_low.txt"
-                (Get-Item -path "$($OutDir)\downloaded_low.txt").Attributes += "Hidden"
-            } 
-        }
+        #if (-not (Test-Path -PathType Any $OutDir)) {
+        #    New-Item -ItemType Directory -Path $OutDir -Force
+        #    if (-not $Force) {
+        #        New-Item -ItemType File -Path "$($OutDir)\downloaded.txt"
+        #        (Get-Item -path "$($OutDir)\downloaded.txt").Attributes += "Hidden"
+        #        New-Item -ItemType File -Path "$($OutDir)\downloaded_low.txt"
+        #        (Get-Item -path "$($OutDir)\downloaded_low.txt").Attributes += "Hidden"
+        #    } 
+        #}
+        
+        New-Foundation
+        
         Set-Location $OutDir
         if (-not [string]::IsNullOrEmpty($BatchFile)) {
             foreach ($i in @("--config-location", $ConfigFile, "-a", $BatchFile)) {
