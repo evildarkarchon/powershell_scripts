@@ -32,7 +32,6 @@ function YoutubeDL {
 }
 try {
     $YtDlOptions = [List[string]]::new()
-    if ($Verbose) { $YtDlOptions.Add("--verbose") }
     if ($ListFormats) {
         if (-not [string]::IsNullOrEmpty($BatchFile)){
             foreach ($i in @("--list-formats", "-a", $BatchFile)) {
