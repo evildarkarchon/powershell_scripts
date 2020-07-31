@@ -14,16 +14,12 @@ param (
     [switch]$ListFormats,
     [Parameter(ParameterSetName="Download", Mandatory=$true)]
     [Parameter(ParameterSetName="Batch", Mandatory=$true)]
-    [ValidateNotNullOrEmpty]
     [string]$Streamer,
-    [switch]$Verbose,
     [Parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true, ParameterSetName="Download")]
     [Parameter(Mandatory=$false, ParameterSetName="Test")]
-    [ValidateNotNullOrEmpty]
     [string[]]$Urls,
     [Parameter(Mandatory=$true, ParameterSetName="Batch")]
     [Parameter(Mandatory=$false, ParameterSetName="Test")]
-    [ValidateNotNullOrEmpty]
     [string]$BatchFile
 )
 $PreviousDirectory = Get-Location

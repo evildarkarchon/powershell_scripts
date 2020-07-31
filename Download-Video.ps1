@@ -11,20 +11,15 @@ param (
     [switch]$ListFormats,
     [Parameter(ParameterSetName="Batch")]
     [Parameter(ParameterSetName="Download")]
-    [ValidateNotNullOrEmpty]
     [string]$OutDir,
     [Parameter(ParameterSetName="Batch")]
     [Parameter(ParameterSetName="Download")]
-    [ValidateNotNullOrEmpty]
     [string]$IntermediateDir,
-    [switch]$Verbose,
     [Parameter(ParameterSetName="Batch")]
     [Parameter(ParameterSetName="Test")]
-    [ValidateNotNullOrEmpty]
     [string]$BatchFile,
     [Parameter(Position=0, ValueFromRemainingArguments=$true, ParameterSetName="Download")]
     [Parameter(ParameterSetName="Test")]
-    [ValidateNotNullOrEmpty]
     [string[]]$Urls
 )
 $PreviousLocation = Get-Location
