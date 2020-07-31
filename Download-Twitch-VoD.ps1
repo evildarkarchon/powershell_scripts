@@ -15,6 +15,7 @@ param (
     [Parameter(ParameterSetName="Download", Mandatory=$true)]
     [Parameter(ParameterSetName="Batch", Mandatory=$true)]
     [string]$Streamer,
+    [switch]$Verbose,
     [Parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true, ParameterSetName="Download")]
     [Parameter(Mandatory=$false, ParameterSetName="Test")]
     [string[]]$Urls,
@@ -32,6 +33,7 @@ function YoutubeDL {
 }
 try {
     $YtDlOptions = [List[string]]::new()
+    if ($Verbose) { $YtDlOptions.Add("--verbose") }
     if ($ListFormats) {
         if (-not [string]::IsNullOrEmpty($BatchFile)){
             #$YtDlOptions.AddRange(@("--list-formats", "-a", $BatchFile))

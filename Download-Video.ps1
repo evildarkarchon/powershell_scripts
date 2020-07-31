@@ -15,6 +15,7 @@ param (
     [Parameter(ParameterSetName="Batch")]
     [Parameter(ParameterSetName="Download")]
     [string]$IntermediateDir,
+    [switch]$Verbose,
     [Parameter(ParameterSetName="Batch")]
     [Parameter(ParameterSetName="Test")]
     [string]$BatchFile,
@@ -32,6 +33,7 @@ function YoutubeDL {
 }
 try {
     $YtDlOptions = [List[string]]::new()
+    if ($Verbose) { $YtDlOptions.Add("--verbose") }
     if (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not $ListFormats) {
         if (-not (Test-Path -PathType Any $IntermediateDir)) {
             New-Item -ItemType Directory -Path $IntermediateDir -Force
