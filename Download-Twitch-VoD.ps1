@@ -16,7 +16,7 @@ param (
     [Parameter(ParameterSetName="Batch", Mandatory=$true)]
     [string]$Streamer,
     [Parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true, ParameterSetName="Download")]
-    [Parameter(Mandatory=$false, ParameterSetName="Test")]
+    [Parameter(Mandatory=$false, Position=0, ValueFromRemainingArguments=$true, ParameterSetName="Test")]
     [string[]]$Urls,
     [Parameter(Mandatory=$true, ParameterSetName="Batch")]
     [Parameter(Mandatory=$false, ParameterSetName="Test")]
@@ -32,16 +32,17 @@ function YoutubeDL {
 }
 try {
     $YtDlOptions = [List[string]]::new()
-    if ($ListFormats) {
+    if ($ListFormats -eq $true) {
+        $YtDlOptions.Add("--list-formats")
         if (-not [string]::IsNullOrEmpty($BatchFile)){
-            foreach ($i in @("--list-formats", "-a", $BatchFile)) {
+            foreach ($i in @("-a", $BatchFile)) {
                 $YtDlOptions.Add($i)
             }
         }
         else {
-            $YtDlOptions.Add("--list-formats")
             $YtDlOptions.AddRange($Urls)
         }
+        YoutubeDL($YtDlOptions.ToArray())
     }
     else {
         if (-not (Test-Path -PathType Any $IntermediateDir)) {

@@ -19,7 +19,7 @@ param (
     [Parameter(ParameterSetName="Test")]
     [string]$BatchFile,
     [Parameter(Position=0, ValueFromRemainingArguments=$true, ParameterSetName="Download")]
-    [Parameter(ParameterSetName="Test")]
+    [Parameter(Position=0, ValueFromRemainingArguments=$true, ParameterSetName="Test")]
     [string[]]$Urls
 )
 $PreviousLocation = Get-Location
@@ -128,13 +128,13 @@ try {
         }
     }
     elseif ($ListFormats) {
+        $YtDlOptions.Add("--list-formats")
         if (-not [string]::IsNullOrEmpty($BatchFile)) {
-            foreach ($i in @("--list-formats", "-a", $BatchFile)) {
+            foreach ($i in @("-a", $BatchFile)) {
                 $YtDlOptions.Add($i)
             }
         }
         else {
-            $YtDlOptions.Add("--list-formats")
             $YtDlOptions.AddRange($Urls)
         }
     }
