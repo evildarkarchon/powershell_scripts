@@ -9,12 +9,21 @@ param (
     [string]$IntermediateDir="D:\Video Downloads",
     [Parameter(ParameterSetName="Download")]
     [Parameter(ParameterSetName="Batch")]
+    [string]$OutDir="D:\Videos\Twitch",
+    [Parameter(ParameterSetName="Download")]
+    [Parameter(ParameterSetName="Batch")]
+    [string]$ConfigDir="D:\Videos",
+    [Parameter(ParameterSetName="Download")]
+    [Parameter(ParameterSetName="Batch")]
     [switch]$Force,
     [Parameter(ParameterSetName="Test")]
     [switch]$ListFormats,
     [Parameter(ParameterSetName="Download", Mandatory=$true)]
     [Parameter(ParameterSetName="Batch", Mandatory=$true)]
     [string]$Streamer,
+    [Parameter(ParameterSetName="Download")]
+    [Parameter(ParameterSetName="Batch")]
+    [switch]$Local,
     [Parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true, ParameterSetName="Download")]
     [Parameter(Mandatory=$false, Position=0, ValueFromRemainingArguments=$true, ParameterSetName="Test")]
     [string[]]$Urls,
@@ -54,24 +63,23 @@ try {
             $CreateDirectories = $false
         }
         
-        if (-not (Test-Path -PathType Container "Z:\Videos\Twitch\$($Streamer)") -and $CreateDirectories -eq $true) { 
-            New-Item -ItemType Directory -Path "Z:\Videos\Twitch\$($Streamer)" -Force
+        if (-not (Test-Path -PathType Any "$($OutDir)\$($Streamer)") -and $CreateDirectories -eq $true) { 
+            New-Item -ItemType Directory -Path "$($Outdir)\$($Streamer)" -Force
             if (-not $Force) {
-                New-Item -ItemType File -Path "Z:\Videos\Twitch\$($Streamer)\downloaded.txt"
-                (Get-Item -path "Z:\Videos\Twitch\$($Streamer)\downloaded.txt").Attributes += "Hidden"
-                New-Item -ItemType File -Path "Z:\Videos\Twitch\$($Streamer)\downloaded_low.txt"
-                (Get-Item -path "Z:\Videos\Twitch\$($Streamer)\downloaded_low.txt").Attributes += "Hidden"
+                New-Item -ItemType File -Path "$($Outdir)\$($Streamer)\downloaded.txt"
+                (Get-Item -path "$($Outdir)\$($Streamer)\downloaded.txt").Attributes += "Hidden"
+                New-Item -ItemType File -Path "$($Outdir)\$($Streamer)\downloaded_low.txt"
+                (Get-Item -path "$($Outdir)\$($Streamer)\downloaded_low.txt").Attributes += "Hidden"
             }
         }
-    
         if ($Force) {
             if (-not [string]::IsNullOrEmpty($BatchFile)) {
-                foreach ($i in @("--config-location", "Z:\Videos\$($Quality)_force.conf", "-a", $BatchFile)) {
+                foreach ($i in @("--config-location", "$($ConfigDir)$($Quality)_force.conf", "-a", $BatchFile)) {
                     $YtDlOptions.Add($i)
                 }
             }
             else {
-                foreach ($i in @("--config-location", "Z:\Videos\$($Quality)_force.conf")) {
+                foreach ($i in @("--config-location", "$($ConfigDir)$($Quality)_force.conf")) {
                     $YtDlOptions.Add($i)
                 }
                 $YtDlOptions.AddRange($Urls)
@@ -80,12 +88,12 @@ try {
         else {
             if ($Streamer.ToLower() -eq "none") {
                 if (-not [string]::IsNullOrEmpty($BatchFile)) {
-                    foreach ($i in @("--config-location", "Z:\Videos\$($Quality).conf", "--download-archive", "Z:\Videos\Twitch\downloaded.txt", "-a", $BatchFile)) {
+                    foreach ($i in @("--config-location", "$($ConfigDir)$($Quality).conf", "--download-archive", "$($Outdir)\downloaded.txt", "-a", $BatchFile)) {
                         $YtDlOptions.Add($i)
                     }
                 }
                 else {
-                    foreach ($i in @("--config-location", "Z:\Videos\$($Quality).conf", "--download-archive", "Z:\Videos\Twitch\downloaded.txt")) {
+                    foreach ($i in @("--config-location", "$($ConfigDir)$($Quality).conf", "--download-archive", "$($Outdir)\downloaded.txt")) {
                         $YtDlOptions.Add($i)
                     }
                     $YtDlOptions.AddRange($Urls)
@@ -93,12 +101,12 @@ try {
             }
             else {
                 if (-not [string]::IsNullOrEmpty($BatchFile)) {
-                    foreach ($i in @("--config-location", "Z:\Videos\$($Quality).conf", "--download-archive", "Z:\Videos\Twitch\$($Streamer)\downloaded.txt", "-a", $BatchFile)) {
+                    foreach ($i in @("--config-location", "$($ConfigDir)$($Quality).conf", "--download-archive", "$($Outdir)\$($Streamer)\downloaded.txt", "-a", $BatchFile)) {
                         $YtDlOptions.Add($i)
                     }
                 }
                 else {
-                    foreach ($i in @("--config-location", "Z:\Videos\$($Quality).conf", "--download-archive", "Z:\Videos\Twitch\$($Streamer)\downloaded.txt")) {
+                    foreach ($i in @("--config-location", "$($ConfigDir)$($Quality).conf", "--download-archive", "$($Outdir)\$($Streamer)\downloaded.txt")) {
                         $YtDlOptions.Add($i)
                     }
                     $YtDlOptions.AddRange($Urls)
@@ -110,12 +118,12 @@ try {
 
         foreach ($file in Get-ChildItem $IntermediateDir -Exclude "*.ytdl","*.part","*.txt") {
             if ($Streamer.ToLower() -eq "none") {
-                Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' -> 'Z:\Videos\Twitch\$($file.Name)'"
-                Move-item -LiteralPath "$($IntermediateDir)\$($file.Name)" -Destination "z:\Videos\Twitch\$($file.Name)"
+                Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' -> '$($Outdir)\$($file.Name)'"
+                Move-item -LiteralPath "$($IntermediateDir)\$($file.Name)" -Destination "$($Outdir)\$($file.Name)"
             }
             else {
-                Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' -> 'Z:\Videos\Twitch\$($Streamer)\$($file.Name)'"
-                Move-item -LiteralPath "$($IntermediateDir)\$($file.Name)" -Destination "z:\Videos\Twitch\$($Streamer)\$($file.Name)"
+                Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' -> '$($Outdir)\$($Streamer)\$($file.Name)'"
+                Move-item -LiteralPath "$($IntermediateDir)\$($file.Name)" -Destination "$($Outdir)\$($Streamer)\$($file.Name)"
             }
         }
     }
