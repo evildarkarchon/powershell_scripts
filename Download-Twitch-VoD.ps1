@@ -9,10 +9,10 @@ param (
     [string]$IntermediateDir="D:\Video Downloads",
     [Parameter(ParameterSetName="Download")]
     [Parameter(ParameterSetName="Batch")]
-    [string]$OutDir="D:\Videos\Twitch",
+    [string]$OutDir="Z:\Videos\Twitch",
     [Parameter(ParameterSetName="Download")]
     [Parameter(ParameterSetName="Batch")]
-    [string]$ConfigDir="D:\Videos",
+    [string]$ConfigDir="Z:\Videos",
     [Parameter(ParameterSetName="Download")]
     [Parameter(ParameterSetName="Batch")]
     [switch]$Force,
@@ -74,12 +74,12 @@ try {
         }
         if ($Force) {
             if (-not [string]::IsNullOrEmpty($BatchFile)) {
-                foreach ($i in @("--config-location", "$($ConfigDir)$($Quality)_force.conf", "-a", $BatchFile)) {
+                foreach ($i in @("--config-location", "$($ConfigDir)\$($Quality)_force.conf", "-a", $BatchFile)) {
                     $YtDlOptions.Add($i)
                 }
             }
             else {
-                foreach ($i in @("--config-location", "$($ConfigDir)$($Quality)_force.conf")) {
+                foreach ($i in @("--config-location", "$($ConfigDir)\$($Quality)_force.conf")) {
                     $YtDlOptions.Add($i)
                 }
                 $YtDlOptions.AddRange($Urls)
@@ -88,12 +88,12 @@ try {
         else {
             if ($Streamer.ToLower() -eq "none") {
                 if (-not [string]::IsNullOrEmpty($BatchFile)) {
-                    foreach ($i in @("--config-location", "$($ConfigDir)$($Quality).conf", "--download-archive", "$($Outdir)\downloaded.txt", "-a", $BatchFile)) {
+                    foreach ($i in @("--config-location", "$($ConfigDir)\$($Quality).conf", "--download-archive", "$($Outdir)\downloaded.txt", "-a", $BatchFile)) {
                         $YtDlOptions.Add($i)
                     }
                 }
                 else {
-                    foreach ($i in @("--config-location", "$($ConfigDir)$($Quality).conf", "--download-archive", "$($Outdir)\downloaded.txt")) {
+                    foreach ($i in @("--config-location", "$($ConfigDir)\$($Quality).conf", "--download-archive", "$($Outdir)\downloaded.txt")) {
                         $YtDlOptions.Add($i)
                     }
                     $YtDlOptions.AddRange($Urls)
@@ -101,12 +101,12 @@ try {
             }
             else {
                 if (-not [string]::IsNullOrEmpty($BatchFile)) {
-                    foreach ($i in @("--config-location", "$($ConfigDir)$($Quality).conf", "--download-archive", "$($Outdir)\$($Streamer)\downloaded.txt", "-a", $BatchFile)) {
+                    foreach ($i in @("--config-location", "$($ConfigDir)\$($Quality).conf", "--download-archive", "$($Outdir)\$($Streamer)\downloaded.txt", "-a", $BatchFile)) {
                         $YtDlOptions.Add($i)
                     }
                 }
                 else {
-                    foreach ($i in @("--config-location", "$($ConfigDir)$($Quality).conf", "--download-archive", "$($Outdir)\$($Streamer)\downloaded.txt")) {
+                    foreach ($i in @("--config-location", "$($ConfigDir)\$($Quality).conf", "--download-archive", "$($Outdir)\$($Streamer)\downloaded.txt")) {
                         $YtDlOptions.Add($i)
                     }
                     $YtDlOptions.AddRange($Urls)
