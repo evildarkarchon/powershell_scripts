@@ -8,9 +8,13 @@ param (
 )
 
 $files = Get-ChildItem $paths
+
 if ($files.Length -gt 1) {
     foreach ($file in $files) {
-        if (-not [string]::IsNullOrEmpty($outname)) {
+        if (-not [string]::IsNullOrEmpty($outname) -and (Test-Path $outname -PathType Container)) {
+            ebook-convert "$($file.Name)" "$($outname)\$($file.BaseName).$($format)"
+        }
+        elseif (-not (Test-Path $outname -PathType Any) -and -not [string]::IsNullOrEmpty($outname)) {
             ebook-convert "$($file.Name)" "$($outname)"
         }
         else {
@@ -19,10 +23,5 @@ if ($files.Length -gt 1) {
     }
 }
 else {
-    if (-not [string]::IsNullOrEmpty($outname)) {
-        ebook-convert "$($file.Name)" "$($outname)"
-    }
-    else {
-        ebook-convert "$($file.Name)" "$($file.BaseName).$($format)"
-    }
+    throw "Please Specify At Least 1 file"
 }
