@@ -14,7 +14,7 @@ if ($files.Length -gt 1) {
         if (-not [string]::IsNullOrEmpty($outname) -and (Test-Path $outname -PathType Container)) {
             ebook-convert "$($file.Name)" "$($outname)\$($file.BaseName).$($format)"
         }
-        elseif (-not (Test-Path $outname -PathType Any) -and -not [string]::IsNullOrEmpty($outname)) {
+        elseif (-not [string]::IsNullOrEmpty($outname) -and -not (Test-Path $outname -PathType Any)) {
             ebook-convert "$($file.Name)" "$($outname)"
         }
         else {
