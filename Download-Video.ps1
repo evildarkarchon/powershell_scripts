@@ -75,7 +75,7 @@ try {
             $Destination = (Get-Location)
         }
 
-        if (-not (Test-Path -PathType Any $Destination) -and $CreateDirectories -eq $true) { 
+        if (-not (Test-Path -PathType Any $Destination)) { 
             New-Item -ItemType Directory -Path $Destination -Force
             if (-not $Force) {
                 New-Item -ItemType File -Path "$($Destination)\downloaded.txt"
