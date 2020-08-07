@@ -6,21 +6,16 @@ param (
     [string[]]$paths
 )
 
-$files = Get-ChildItem $paths
+$files = Get-ChildItem $paths -ErrorAction Stop
 # write-host $files.GetType().FullName
-if ($files.Length -gt 1) {
-    foreach ($file in $files) {
-        if (-not [string]::IsNullOrEmpty($outname) -and (Test-Path $outname -PathType Container)) {
-            ebook-polish -Hup "$($file.Name)" "$($outname)\$($file.Name)"
-        }
-        elseif (-not [string]::IsNullOrEmpty($outname) -and -not (Test-Path $outname -PathType Any)) {
-            ebook-convert "$($file.Name)" "$($outname)"
-        }
-        else {
-            ebook-polish -Hup "$($file.Name)"
-        }
+foreach ($file in $files) {
+    if (-not [string]::IsNullOrEmpty($outname) -and (Test-Path $outname -PathType Container)) {
+        ebook-polish -Hup "$($file.Name)" "$($outname)\$($file.Name)"
     }
-}
-else {
-    throw "Specify at least one file to polish."
+    elseif (-not [string]::IsNullOrEmpty($outname) -and -not (Test-Path $outname -PathType Any)) {
+        ebook-convert "$($file.Name)" "$($outname)"
+    }
+    else {
+        ebook-polish -Hup "$($file.Name)"
+    }
 }
