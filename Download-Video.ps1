@@ -61,6 +61,7 @@ try {
         if (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not (Test-Path -PathType Any $IntermediateDir)) {
             New-Item -ItemType Directory -Path $IntermediateDir -Force
         }
+
         if ([string]::IsNullOrEmpty($Producer) -and -not [string]::IsNullOrEmpty($OutDir)){
             $Destination = $OutDir
         }
@@ -73,6 +74,7 @@ try {
         else {
             $Destination = (Get-Location)
         }
+
         if (-not (Test-Path -PathType Any $Destination) -and $CreateDirectories -eq $true) { 
             New-Item -ItemType Directory -Path $Destination -Force
             if (-not $Force) {
@@ -98,6 +100,7 @@ try {
                 $YtDlOptions.Add($i)
             }
         }
+
         if ([string]::IsNullOrEmpty($Producer)) {
             if (-not [string]::IsNullOrEmpty($BatchFile)) {
                 foreach ($i in @("--download-archive", "$($Destination)\downloaded.txt", "-a", $BatchFile)) {
@@ -125,16 +128,18 @@ try {
             }
         }
     }
-        YoutubeDL $YtDlOptions.ToArray() $Destination
-        if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
-            foreach ($file in Get-ChildItem $IntermediateDir -Exclude "*.txt","*.ytdl","*.part") {
-                Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' -> '$($Destination)\$($file.Name)'"
-                Move-Item -LiteralPath "$($IntermediateDir)\$($file.Name)" -Destination "$($Destination)\$($file.Name)"
-                if (Test-Path $file -PathType Any) {
-                    Remove-Item -Force $file
-                }
+        
+    YoutubeDL $YtDlOptions.ToArray() $Destination
+        
+    if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
+        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "*.txt","*.ytdl","*.part") {
+            Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' -> '$($Destination)\$($file.Name)'"
+            Move-Item -LiteralPath "$($IntermediateDir)\$($file.Name)" -Destination "$($Destination)\$($file.Name)"
+            if (Test-Path $file -PathType Any) {
+                Remove-Item -Force $file
             }
         }
+    }
 }
 finally {
     Set-Location $PreviousDirectory
