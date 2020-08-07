@@ -36,7 +36,7 @@ function YoutubeDL {
         [Parameter(Mandatory=$true)]
         [string[]]$Options,
         [Parameter(Mandatory=$true)]
-        $Output
+        [string]$Output
     )
     Set-Location $Output
     youtube-dl $Options
@@ -69,10 +69,10 @@ try {
             $Destination = "$($OutDir)\$($Producer)"
         }
         elseif (-not [string]::IsNullOrEmpty($Producer) -and [string]::IsNullOrEmpty($OutDir)) {
-            $Destination = "$(Get-Location)\$($Producer)"
+            $Destination = "$($PreviousDirectory)\$($Producer)"
         }
         else {
-            $Destination = (Get-Location)
+            $Destination = $PreviousDirectory
         }
 
         if (-not (Test-Path -PathType Any $Destination)) { 
