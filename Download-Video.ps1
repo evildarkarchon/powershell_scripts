@@ -7,6 +7,7 @@ param (
     [Parameter(ParameterSetName="Download")]
     [Parameter(ParameterSetName="Batch")]
     [string]$IntermediateDir,
+    [Alias("BaseDir")]
     [Parameter(ParameterSetName="Download")]
     [Parameter(ParameterSetName="Batch")]
     [string]$OutDir,
@@ -19,7 +20,7 @@ param (
     [switch]$Force,
     [Parameter(ParameterSetName="Test")]
     [switch]$ListFormats,
-    [Alias("Streamer")]
+    [Alias("Streamer","Podcast")]
     [Parameter(ParameterSetName="Download")]
     [Parameter(ParameterSetName="Batch")]
     [string]$Producer,
@@ -121,7 +122,7 @@ try {
                 }
             }
             else {
-                foreach ($i in @("--download-archive", "$($Destination))\downloaded.txt")) {
+                foreach ($i in @("--download-archive", "$($Destination)\downloaded.txt")) {
                     $YtDlOptions.Add($i)
                 }
                 $YtDlOptions.AddRange($Urls)
