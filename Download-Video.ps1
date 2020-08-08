@@ -128,9 +128,8 @@ try {
                 $YtDlOptions.AddRange($Urls)
             }
         }
+        YoutubeDL $YtDlOptions.ToArray() $Destination
     }
-        
-    YoutubeDL $YtDlOptions.ToArray() $Destination
         
     if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
         foreach ($file in Get-ChildItem $IntermediateDir -Exclude "*.txt","*.ytdl","*.part") {
