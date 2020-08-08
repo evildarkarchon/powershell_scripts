@@ -24,6 +24,9 @@ param (
     [Parameter(ParameterSetName="Download")]
     [Parameter(ParameterSetName="Batch")]
     [string]$Producer,
+    [Parameter(ParameterSetName="Download")]
+    [Parameter(ParameterSetName="Batch")]
+    [string]$OutputFormat,    
     [Parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true, ParameterSetName="Download")]
     [Parameter(Mandatory=$false, Position=0, ValueFromRemainingArguments=$true, ParameterSetName="Test")]
     [string[]]$Urls,
@@ -98,6 +101,12 @@ try {
         }
         else {
             foreach ($i in @("--config-location", "$($ConfigDir)\$($Quality).conf")) {
+                $YtDlOptions.Add($i)
+            }
+        }
+
+        if (-not [string]::IsNullOrEmpty($OutputFormat)) {
+            foreach ($i in @("-o", $OutputFormat)) {
                 $YtDlOptions.Add($i)
             }
         }
