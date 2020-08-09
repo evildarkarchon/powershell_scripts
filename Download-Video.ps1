@@ -76,23 +76,23 @@ try {
         }
         $DestinationSB = [StringBuilder]::new()
         if (-not [string]::IsNullOrEmpty($OutDir)){
-            $DestinationSB.Append($OutDir)
+            [void]$DestinationSB.Append($OutDir)
             if (-not [string]::IsNullOrEmpty($Producer)) {
-                $DestinationSB.Append("\")
-                $DestinationSB.Append($Producer)
+                [void]$DestinationSB.Append("\")
+                [void]$DestinationSB.Append($Producer)
             }
         }
         else {
-            $DestinationSB.Append($PreviousDirectory)
+            [void]$DestinationSB.Append($PreviousDirectory)
             if (-not [string]::IsNullOrEmpty($Producer) -and [string]::IsNullOrEmpty($OutDir)) {
-                $DestinationSB.Append("\")
-                $DestinationSB.Append($Producer)
+                [void]$DestinationSB.Append("\")
+                [void]$DestinationSB.Append($Producer)
             }
         }
 
         if (-not [string]::IsNullOrEmpty($Series)) {
-            $DestinationSB.Append("\")
-            $DestinationSB.Append($Series)
+            [void]$DestinationSB.Append("\")
+            [void]$DestinationSB.Append($Series)
         }
         $Destination = $DestinationSB.ToString()
 
