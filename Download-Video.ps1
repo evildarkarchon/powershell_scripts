@@ -39,15 +39,20 @@ function YoutubeDL {
     param (
         [Parameter(Mandatory=$true)]
         [string[]]$Options,
-        [Parameter(Mandatory=$true)]
         [string]$Output
     )
-    Set-Location $Output
-    youtube-dl $Options
+    if (-not [string]::IsNullOrEmpty($Output)) {
+        Set-Location $Output
+        youtube-dl $Options
+    }
+    else {
+        youtube-dl $Options
+    }
+    
 }
 try {
     $YtDlOptions = [List[string]]::new()
-    [string]$Destination
+    [string]$Destination = ""
     
     if ($ListFormats -eq $true) {
         $YtDlOptions.Add("--list-formats")
@@ -59,7 +64,7 @@ try {
         else {
             $YtDlOptions.AddRange($Urls)
         }
-        YoutubeDL $YtDlOptions.ToArray() "none"
+        YoutubeDL $YtDlOptions.ToArray()
     }
     else {
         if (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not (Test-Path -PathType Any $IntermediateDir)) {
@@ -110,25 +115,22 @@ try {
                 $YtDlOptions.Add($i)
             }
         }
-
-        if ([string]::IsNullOrEmpty($Producer)) {
-            if (-not [string]::IsNullOrEmpty($BatchFile)) {
-                foreach ($i in @("--download-archive", "$($Destination)\downloaded.txt", "-a", $BatchFile)) {
+        
+        if (-not [string]::IsNullOrEmpty($BatchFile)) {
+            if ($Force) {
+                foreach ($i in @("-a", $BatchFile)) {
                     $YtDlOptions.Add($i)
                 }
             }
             else {
-                foreach ($i in @("--download-archive", "$($Destination)\downloaded.txt")) {
+                foreach ($i in @("--download-archive", "$($Destination)\downloaded.txt", "-a", $BatchFile)) {
                     $YtDlOptions.Add($i)
                 }
-                $YtDlOptions.AddRange($Urls)
             }
-        }
+        }            
         else {
-            if (-not [string]::IsNullOrEmpty($BatchFile)) {
-                foreach ($i in @("--download-archive", "$($Destination)\downloaded.txt", "-a", $BatchFile)) {
-                    $YtDlOptions.Add($i)
-                }
+            if ($Force) {
+                $YtDlOptions.AddRange($Urls)
             }
             else {
                 foreach ($i in @("--download-archive", "$($Destination)\downloaded.txt")) {
@@ -136,9 +138,11 @@ try {
                 }
                 $YtDlOptions.AddRange($Urls)
             }
+            
         }
-        YoutubeDL $YtDlOptions.ToArray() $Destination
     }
+        YoutubeDL $YtDlOptions.ToArray() $Destination
+
         
     if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
         foreach ($file in Get-ChildItem $IntermediateDir -Exclude "*.txt","*.ytdl","*.part") {
