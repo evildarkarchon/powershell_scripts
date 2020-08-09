@@ -1,4 +1,5 @@
 using namespace System.Collections.Generic
+using namespace System.Text
 [CmdletBinding(DefaultParameterSetName="Download")]
 param (
     [Parameter(ParameterSetName="Download")]
@@ -24,6 +25,9 @@ param (
     [Parameter(ParameterSetName="Download")]
     [Parameter(ParameterSetName="Batch")]
     [string]$Producer,
+    [Parameter(ParameterSetName="Download")]
+    [Parameter(ParameterSetName="Batch")]
+    [string]$Series,
     [Parameter(ParameterSetName="Download")]
     [Parameter(ParameterSetName="Batch")]
     [string]$OutputFormat,    
@@ -70,19 +74,27 @@ try {
         if (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not (Test-Path -PathType Any $IntermediateDir)) {
             New-Item -ItemType Directory -Path $IntermediateDir -Force
         }
-
-        if ([string]::IsNullOrEmpty($Producer) -and -not [string]::IsNullOrEmpty($OutDir)){
-            $Destination = $OutDir
-        }
-        elseif (-not [string]::IsNullOrEmpty($Producer) -and -not [string]::IsNullOrEmpty($OutDir)) {
-            $Destination = "$($OutDir)\$($Producer)"
-        }
-        elseif (-not [string]::IsNullOrEmpty($Producer) -and [string]::IsNullOrEmpty($OutDir)) {
-            $Destination = "$($PreviousDirectory)\$($Producer)"
+        $DestinationSB = [StringBuilder]::new()
+        if (-not [string]::IsNullOrEmpty($OutDir)){
+            $DestinationSB.Append($OutDir)
+            if (-not [string]::IsNullOrEmpty($Producer)) {
+                $DestinationSB.Append("\")
+                $DestinationSB.Append($Producer)
+            }
         }
         else {
-            $Destination = $PreviousDirectory
+            $DestinationSB.Append($PreviousDirectory)
+            if (-not [string]::IsNullOrEmpty($Producer) -and [string]::IsNullOrEmpty($OutDir)) {
+                $DestinationSB.Append("\")
+                $DestinationSB.Append($Producer)
+            }
         }
+
+        if (-not [string]::IsNullOrEmpty($Series)) {
+            $DestinationSB.Append("\")
+            $DestinationSB.Append($Series)
+        }
+        $Destination = $DestinationSB.ToString()
 
         if (-not (Test-Path -PathType Any $Destination)) { 
             New-Item -ItemType Directory -Path $Destination -Force
