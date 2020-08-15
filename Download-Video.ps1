@@ -181,14 +181,15 @@ try {
     }
         
     if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
-        foreach ($file in Get-ChildItem $IntermediateDir -Exclude "*.txt","*.ytdl","*.part","*.temp.*") {
+        robocopy $IntermediateDir $Destination /mov /tbd "/r:5" /v /xf "*.txt" "*.ytdl" "*.part" "*.temp.*"
+        #foreach ($file in Get-ChildItem $IntermediateDir -Exclude "*.txt","*.ytdl","*.part","*.temp.*") {
             #Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' -> '$($Destination)\$($file.Name)'"
             #Move-Item -Force -LiteralPath "$($IntermediateDir)\$($file.Name)" -Destination "$($Destination)\$($file.Name)"
             #if (Test-Path $file -PathType Any) {
             #    Remove-Item -Force $file
             #}
-            robocopy /mov "$($IntermediateDir)" "$($Destination)" $file.Name
-        }
+            #robocopy /mov "$($IntermediateDir)" "$($Destination)" $file.Name
+        #}
     }
 }
 finally {
