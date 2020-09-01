@@ -45,13 +45,25 @@ param (
     [string]$BatchFile
 )
 $PreviousDirectory = Get-Location
-$Quality = $Quality.Replace("p", "")
+
+if ($Quality.ToLower() -eq "source") {
+    $Quality = "source"
+}
+else {
+    $Quality = $Quality -replace '[^0-9]', ''
+}
+
+#write-host $Quality
 function YoutubeDL {
     param (
         [Parameter(Mandatory=$true)]
         [string[]]$Options
     )
     youtube-dl $Options
+
+    if (-not [string]::IsNullOrEmpty($IntermediateDir) -and $?) {
+        robocopy $IntermediateDir $Destination /mov /tbd "/r:5" /v /xf "*.txt" "*.ytdl" "*.part" "*.temp.*" "*.part-Frag*"
+    }
 }
 try {
     $YtDlOptions = [List[string]]::new()
@@ -104,7 +116,7 @@ try {
                 New-Item -ItemType File -Path "$($Destination)\downloaded.txt"
                 (Get-Item -path "$($Destination)\downloaded.txt").Attributes += "Hidden"
                 }
-            if (-not (Test-Path -PathType Any "$($Destination)\downloaded_low.txt")) {
+            if (-not (Test-Path -PathType Any "$($Destination)\downloaded_low.txt") -and [int]$Quality -lt 480) {
                 New-Item -ItemType File -Path "$($Destination)\downloaded_low.txt"
                 (Get-Item -path "$($Destination)\downloaded_low.txt").Attributes += "Hidden"
             }
@@ -115,36 +127,28 @@ try {
                 $YtDlOptions.Add($i)
             }
         }
-        
-        $FormatString = "(bestvideo+bestaudio/best)[height <=? $($Quality)][fps <=? $($FrameRate)][ext = webm]/(bestvideo+bestaudio/best)[height <=? $($Quality)][fps <=? $($FrameRate)]/(bestvideo+bestaudio/best)[fps <=? $($FrameRate)]/bestvideo+bestaudio/best"
+        if ($Quality.ToLower() -eq "source") {
+            $FormatString = '(bestvideo+bestaudio/best)[ext = webm]/bestvideo+bestaudio/best'
+        }
+        else {
+            $FormatString = "(bestvideo+bestaudio/best)[height <=? $($Quality)][fps <=? $($FrameRate)][ext = webm]/(bestvideo+bestaudio/best)[height <=? $($Quality)][fps <=? $($FrameRate)]/(bestvideo+bestaudio/best)[fps <=? $($FrameRate)]/bestvideo+bestaudio/best"
+        }
         foreach ($i in @("-f", $FormatString)) {
             $YtDlOptions.Add($i)
         }
-        #elseif ($Force) {
-        #    foreach ($i in @("--config-location", "$($ConfigDir)\$($Quality)_force.conf")) {
-        #        $YtDlOptions.Add($i)
-        #    }
-        #}
-        #else {
-        #    foreach ($i in @("--config-location", "$($ConfigDir)\$($Quality).conf")) {
-        #        $YtDlOptions.Add($i)
-        #    }
-        #}
 
         if ($AutoNumber) {
-            [string[]]$WhereTo
             if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
-                $WhereTo = @("-o", "$($IntermediateDir)\%autonumber - %(title)s-%(id)s_%(height)sp@%(fps)s.%(ext)s")
+                $WhereTo = @("-o", "$($IntermediateDir)\%(autonumber)s - %(title)s-%(id)s_%(height)sp@%(fps)s.%(ext)s")
             }
             else {
-                $WhereTo = @("-o", "$($Destination)\%autonumber - %(title)s-%(id)s_%(height)sp@%(fps)s.%(ext)s")
+                $WhereTo = @("-o", "$($Destination)\%(autonumber)s - %(title)s-%(id)s_%(height)sp@%(fps)s.%(ext)s")
             }
             foreach ($i in $WhereTo) {
                 $YtDlOptions.Add($i)
             }
         }
         else {
-            [string[]]$WhereTo
             if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
                 $WhereTo = @("-o", "$($IntermediateDir)\%(title)s-%(id)s_%(height)sp@%(fps)s.%(ext)s")
             }
@@ -156,7 +160,13 @@ try {
             }
         }
         if (-not $Force) {
-            foreach ($i in @("--download-archive", "$($Destination)\downloaded.txt")) {
+            if ([int]$Quality -lt 480) {
+                $Archive = "downloaded_low.txt"
+            }
+            else {
+                $Archive = "downloaded.txt"
+            }
+            foreach ($i in @("--download-archive", "$($Destination)\$($Archive)")) {
                 $YtDlOptions.Add($i)
             }
         }
@@ -179,19 +189,9 @@ try {
         # write-host $YtDlOptions.ToArray()
         YoutubeDL $YtDlOptions.ToArray()
     }
-        
-    if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
-        robocopy $IntermediateDir $Destination /mov /tbd "/r:5" /v /xf "*.txt" "*.ytdl" "*.part" "*.temp.*"
-        #foreach ($file in Get-ChildItem $IntermediateDir -Exclude "*.txt","*.ytdl","*.part","*.temp.*") {
-            #Write-Host "[powershell] Moving '$($IntermediateDir)\$($file.Name)' -> '$($Destination)\$($file.Name)'"
-            #Move-Item -Force -LiteralPath "$($IntermediateDir)\$($file.Name)" -Destination "$($Destination)\$($file.Name)"
-            #if (Test-Path $file -PathType Any) {
-            #    Remove-Item -Force $file
-            #}
-            #robocopy /mov "$($IntermediateDir)" "$($Destination)" $file.Name
-        #}
-    }
 }
 finally {
-    Set-Location $PreviousDirectory
+    if ((get-location) -ne $PreviousDirectory) {
+        Set-Location $PreviousDirectory
+    }
 }
