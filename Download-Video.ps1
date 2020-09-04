@@ -150,10 +150,12 @@ try {
 
         if ($AutoNumber) {
             if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
-                $WhereTo = @("-o", "$($IntermediateDir)\%(autonumber)s - %(title)s-%(id)s_%(height)sp@%(fps)s.%(ext)s")
+                # $WhereTo = @("-o", "$($IntermediateDir)\%(autonumber)s - %(title)s-%(id)s_%(height)sp@%(fps)s.%(ext)s")
+                $WhereTo = @("-o", (Join-Path $IntermediateDir "%(autonumber)s - %(title)s-%(id)s_%(height)sp@%(fps)s.%(ext)s"))
             }
             else {
-                $WhereTo = @("-o", "$($Destination)\%(autonumber)s - %(title)s-%(id)s_%(height)sp@%(fps)s.%(ext)s")
+                # $WhereTo = @("-o", "$($Destination)\%(autonumber)s - %(title)s-%(id)s_%(height)sp@%(fps)s.%(ext)s")
+                $WhereTo = @("-o", (Join-Path $Destination "%(autonumber)s - %(title)s-%(id)s_%(height)sp@%(fps)s.%(ext)s"))
             }
             foreach ($i in $WhereTo) {
                 $YtDlOptions.Add($i)
@@ -161,10 +163,12 @@ try {
         }
         else {
             if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
-                $WhereTo = @("-o", "$($IntermediateDir)\%(title)s-%(id)s_%(height)sp@%(fps)s.%(ext)s")
+                # $WhereTo = @("-o", "$($IntermediateDir)\%(title)s-%(id)s_%(height)sp@%(fps)s.%(ext)s")
+                $WhereTo = @("-o", (Join-Path $IntermediateDir "%(title)s-%(id)s_%(height)sp@%(fps)s.%(ext)s"))
             }
             else {
-                $WhereTo = @("-o", "$($Destination)\%(title)s-%(id)s_%(height)sp@%(fps)s.%(ext)s")
+                # $WhereTo = @("-o", "$($Destination)\%(title)s-%(id)s_%(height)sp@%(fps)s.%(ext)s")
+                $Whereto = @("-o", (Join-Path $Destination "%(title)s-%(id)s_%(height)sp@%(fps)s.%(ext)s"))
             }
             foreach ($i in $WhereTo) {
                 $YtDlOptions.Add($i)
