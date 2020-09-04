@@ -85,41 +85,52 @@ try {
         if (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not (Test-Path -PathType Any $IntermediateDir)) {
             New-Item -ItemType Directory -Path $IntermediateDir -Force
         }
-        $DestinationSB = [StringBuilder]::new()
-        if (-not [string]::IsNullOrEmpty($OutDir)){
-            [void]$DestinationSB.Append($OutDir)
-            if (-not [string]::IsNullOrEmpty($Producer)) {
-                [void]$DestinationSB.Append("\")
-                [void]$DestinationSB.Append($Producer)
-            }
+        
+        #$DestinationSB = [StringBuilder]::new()
+        #if (-not [string]::IsNullOrEmpty($OutDir)){
+        #    [void]$DestinationSB.Append($OutDir)
+        #    if (-not [string]::IsNullOrEmpty($Producer)) {
+        #        [void]$DestinationSB.Append("\")
+        #        [void]$DestinationSB.Append($Producer)
+        #    }
+        #}
+        #else {
+        #    [void]$DestinationSB.Append($PreviousDirectory)
+        #    if (-not [string]::IsNullOrEmpty($Producer) -and [string]::IsNullOrEmpty($OutDir)) {
+        #        [void]$DestinationSB.Append("\")
+        #        [void]$DestinationSB.Append($Producer)
+        #    }
+        #}
+
+        #if (-not [string]::IsNullOrEmpty($Series)) {
+        #    [void]$DestinationSB.Append("\")
+        #    [void]$DestinationSB.Append($Series)
+        #}
+
+        # $Destination = $DestinationSB.ToString()
+        if ([string]::IsNullOrEmpty($OutDir)) {
+            $Destination = (Join-Path $PreviousDirectory $Producer $Series)
         }
         else {
-            [void]$DestinationSB.Append($PreviousDirectory)
-            if (-not [string]::IsNullOrEmpty($Producer) -and [string]::IsNullOrEmpty($OutDir)) {
-                [void]$DestinationSB.Append("\")
-                [void]$DestinationSB.Append($Producer)
-            }
+            $Destination = (Join-Path $OutDir $Producer $Series)
         }
-
-        if (-not [string]::IsNullOrEmpty($Series)) {
-            [void]$DestinationSB.Append("\")
-            [void]$DestinationSB.Append($Series)
-        }
-
-        $Destination = $DestinationSB.ToString()
+        # write-host $Destination
 
         if (-not (Test-Path -PathType Any $Destination)) { 
             New-Item -ItemType Directory -Path $Destination -Force
         }
+
         if (-not $Force) {
-            if (-not (Test-Path -PathType Any "$($Destination)\downloaded.txt")) {
-                New-Item -ItemType File -Path "$($Destination)\downloaded.txt"
-                (Get-Item -path "$($Destination)\downloaded.txt").Attributes += "Hidden"
-                }
-            if (-not (Test-Path -PathType Any "$($Destination)\downloaded_low.txt") -and [int]$Quality -lt 480) {
-                New-Item -ItemType File -Path "$($Destination)\downloaded_low.txt"
-                (Get-Item -path "$($Destination)\downloaded_low.txt").Attributes += "Hidden"
+            if ([int]$Quality -lt 480) {
+                $ArchiveFile = (Join-Path $Destination "downloaded_low.txt")
             }
+            else {
+                $ArchiveFile = (Join-Path $Destination "downloaded.txt")
+            }
+            if (-not (Test-Path -PathType Any $ArchiveFile)) {
+                New-Item -ItemType File -Path $ArchiveFile
+                (Get-Item -path $ArchiveFile).Attributes += "Hidden"
+                }
         }
 
         if (-not [string]::IsNullOrEmpty($Config) -and (Test-Path $Config -PathType Leaf)) {
@@ -166,7 +177,7 @@ try {
             else {
                 $Archive = "downloaded.txt"
             }
-            foreach ($i in @("--download-archive", "$($Destination)\$($Archive)")) {
+            foreach ($i in @("--download-archive", (Join-Path $Destination $Archive))) {
                 $YtDlOptions.Add($i)
             }
         }
