@@ -9,14 +9,14 @@ param (
 )
 
 $files = Get-ChildItem $paths -ErrorAction Stop
-if (-not [string]::IsNullOrEmpty($outname) -and $outname -eq "..") {
-    $outname = (get-item (get-location)).Parent.FullName
+if (-not [string]::IsNullOrEmpty($outname) -and (Test-Path $outname -PathType Container)) {
+    $outname = (Resolve-Path $outname)
 }
 
 foreach ($file in $files) {
     if (-not [string]::IsNullOrEmpty($outname)) {
         if ((Test-Path $outname -PathType Container)) {
-            ebook-convert $file.Name "$($outname)\$($file.BaseName).$($format)" 
+            ebook-convert $file.Name (Join-Path $outname "$($file.BaseName).$($format)") # "$($outname)\$($file.BaseName).$($format)" 
             if ($remove -and $?) { Remove-Item -Verbose $file.Name }
         }
         else {

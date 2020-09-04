@@ -6,8 +6,8 @@ param (
     [string[]]$paths
 )
 
-if (-not [string]::IsNullOrEmpty($outname) -and $outname -eq "..") {
-    $outname = (get-item (get-location)).Parent.FullName
+if (-not [string]::IsNullOrEmpty($outname) -and (Test-Path $outname -PathType Container)) {
+    $outname = (Resolve-Path $outname)
 }
 
 $files = Get-ChildItem $paths -ErrorAction Stop
@@ -16,7 +16,7 @@ $files = Get-ChildItem $paths -ErrorAction Stop
 foreach ($file in $files) {
     if (-not [string]::IsNullOrEmpty($outname)) {
         if ((Test-Path $outname -PathType Container)) {
-            ebook-polish -Hupe "$($file.Name)" "$($outname)\$($file.Name)"
+            ebook-polish -Hupe "$($file.Name)" (Join-Path $outname $file.Name) # "$($outname)\$($file.Name)"
         }
         elseif (-not (Test-Path $outname -PathType Any)) {
             ebook-polish -Hupe "$($file.Name)" "$($outname)"
