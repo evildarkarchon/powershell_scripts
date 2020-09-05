@@ -98,15 +98,17 @@ try {
 
         if (-not $Force) {
             if ([int]$Quality -lt 480) {
-                $ArchiveFile = (Join-Path $Destination "downloaded_low.txt")
+                $ArchiveFile = (Join-Path $Destination ".downloaded_low")
             }
             else {
-                $ArchiveFile = (Join-Path $Destination "downloaded.txt")
+                $ArchiveFile = (Join-Path $Destination ".downloaded")
             }
             if (-not (Test-Path -PathType Any $ArchiveFile)) {
                 New-Item -ItemType File -Path $ArchiveFile
-                (Get-Item -path $ArchiveFile).Attributes += "Hidden"
+                if (-not $PSVersionTable.Platform -eq "Unix") {
+                    (Get-Item -path $ArchiveFile).Attributes += "Hidden"
                 }
+            }
             
             foreach ($i in @("--download-archive", $ArchiveFile)) {
                 $YtDlOptions.Add($i)
