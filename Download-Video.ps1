@@ -81,9 +81,6 @@ try {
         YoutubeDL $YtDlOptions.ToArray()
     }
     else {
-        foreach ($i in @("--add-metadata", "--mark-watched", "--fragment-retries 30", "-retries 30", "--abort-on-unavailable-fragment", "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.15 Safari/537.36 Edg/85.0.564.8)")) {
-            $YtDlOptions.Add($i)
-        }
         if (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not (Test-Path -PathType Any $IntermediateDir)) {
             New-Item -ItemType Directory -Path $IntermediateDir -Force
         }
