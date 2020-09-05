@@ -60,7 +60,7 @@ function YoutubeDL {
     )
     youtube-dl $Options
 
-    if (-not [string]::IsNullOrEmpty($IntermediateDir) -and $?) {
+    if (-not [string]::IsNullOrEmpty($IntermediateDir) -and $? -and -not $PSVersionTable.Platform -eq "Unix") {
         robocopy $IntermediateDir $Destination /mov /tbd "/r:5" /v /xf "*.txt" "*.ytdl" "*.part" "*.temp.*" "*.part-Frag*"
     }
 }
