@@ -105,6 +105,9 @@ try {
             }
             if (-not (Test-Path -PathType Any $ArchiveFile)) {
                 New-Item -ItemType File -Path $ArchiveFile
+                if ($IsWindows) {
+                    (Get-Item -path $ArchiveFile).Attributes += "Hidden"
+                }
             }
             
             foreach ($i in @("--download-archive", $ArchiveFile)) {
