@@ -1,3 +1,4 @@
+#!/usr/bin/env pwsh
 using namespace System.Collections.Generic
 #using namespace System.Text
 [CmdletBinding(DefaultParameterSetName="Download")]
