@@ -61,7 +61,7 @@ function YoutubeDL {
     )
     youtube-dl $Options
 
-    if (-not [string]::IsNullOrEmpty($IntermediateDir) -and $? -and -not $PSVersionTable.Platform -eq "Unix") {
+    if (-not [string]::IsNullOrEmpty($IntermediateDir) -and $?) {
         robocopy $IntermediateDir $Destination /mov /tbd "/r:5" /v /xf "*.txt" "*.ytdl" "*.part" "*.temp.*" "*.part-Frag*"
     }
 }
@@ -105,9 +105,7 @@ try {
             }
             if (-not (Test-Path -PathType Any $ArchiveFile)) {
                 New-Item -ItemType File -Path $ArchiveFile
-                if (-not $PSVersionTable.Platform -eq "Unix") {
-                    (Get-Item -path $ArchiveFile).Attributes += "Hidden"
-                }
+               (Get-Item -path $ArchiveFile).Attributes += "Hidden"
             }
             
             foreach ($i in @("--download-archive", $ArchiveFile)) {
