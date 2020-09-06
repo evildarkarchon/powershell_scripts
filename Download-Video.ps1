@@ -45,7 +45,7 @@ param (
     [Parameter(Mandatory=$false, ParameterSetName="Test")]
     [string]$BatchFile
 )
-if (-not (Test-Variable 'variable:IsWindows')) {
+if (-not (Test-Path Variable:\IsWindows)) {
     throw "This script does not work on Windows Powershell (aka Powershell <6.0)"
 }
 $PreviousDirectory = Get-Location
