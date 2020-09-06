@@ -61,7 +61,7 @@ function YoutubeDL {
     )
     youtube-dl $Options
 
-    if (-not [string]::IsNullOrEmpty($IntermediateDir) -and $?) {
+    if (-not [string]::IsNullOrEmpty($IntermediateDir) -and $? -and $IsWindows) {
         robocopy $IntermediateDir $Destination /mov /tbd "/r:5" /v /xf "*.txt" "*.ytdl" "*.part" "*.temp.*" "*.part-Frag*"
     }
 }
@@ -81,7 +81,11 @@ try {
         YoutubeDL $YtDlOptions.ToArray()
     }
     else {
-        if (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not (Test-Path -PathType Any $IntermediateDir)) {
+        if (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not $IsWindows) {
+            Write-Host "Intermediate Directory only works on Windows, ignoring option."
+        }
+
+        if (-not [string]::IsNullOrEmpty($IntermediateDir) -and -not (Test-Path -PathType Any $IntermediateDir) -and $IsWindows) {
             New-Item -ItemType Directory -Path $IntermediateDir -Force
         }
         
@@ -116,7 +120,7 @@ try {
         }
 
         if (-not [string]::IsNullOrEmpty($Config) -and (Test-Path $Config -PathType Leaf)) {
-            foreach ($i in @("--config-location", $Config)) {
+            foreach ($i in @("--config-location", (Resolve-Path $Config))) {
                 $YtDlOptions.Add($i)
             }
         }
@@ -133,7 +137,7 @@ try {
         }
 
         if ($AutoNumber) {
-            if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
+            if (-not [string]::IsNullOrEmpty($IntermediateDir) -and $IsWindows) {
                 $WhereTo = @("-o", (Join-Path $IntermediateDir "%(autonumber)s - %(title)s-%(id)s_%(height)sp@%(fps)s.%(ext)s"))
             }
             else {
@@ -144,7 +148,7 @@ try {
             }
         }
         else {
-            if (-not [string]::IsNullOrEmpty($IntermediateDir)) {
+            if (-not [string]::IsNullOrEmpty($IntermediateDir) -and $IsWindows) {
                 $WhereTo = @("-o", (Join-Path $IntermediateDir "%(title)s-%(id)s_%(height)sp@%(fps)s.%(ext)s"))
             }
             else {
@@ -160,7 +164,7 @@ try {
         }
 
         if (-not [string]::IsNullOrEmpty($BatchFile)) {
-            foreach ($i in @("-a", $BatchFile)) {
+            foreach ($i in @("-a", (Resolve-Path $BatchFile))) {
                 $YtDlOptions.Add($i)
             }
         }            
