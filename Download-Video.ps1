@@ -12,10 +12,10 @@ param (
     [Parameter(ParameterSetName="Download")]
     [Parameter(ParameterSetName="Batch")]
     [string]$IntermediateDir,
-    [Alias("BaseDir")]
+    [Alias("OutDir")]
     [Parameter(ParameterSetName="Download")]
     [Parameter(ParameterSetName="Batch")]
-    [string]$OutDir,
+    [string]$BaseDir,
     [Alias("ConfigFile")]
     [Parameter(ParameterSetName="Download")]
     [Parameter(ParameterSetName="Batch")]
@@ -45,6 +45,9 @@ param (
     [Parameter(Mandatory=$false, ParameterSetName="Test")]
     [string]$BatchFile
 )
+if (-not (Test-Variable 'variable:IsWindows')) {
+    throw "This script does not work on Windows Powershell (aka Powershell <6.0)"
+}
 $PreviousDirectory = Get-Location
 
 if ($Quality.ToLower() -eq "source") {
@@ -89,11 +92,11 @@ try {
             New-Item -ItemType Directory -Path $IntermediateDir -Force
         }
         
-        if ([string]::IsNullOrEmpty($OutDir)) {
+        if ([string]::IsNullOrEmpty($BaseDir)) {
             $Destination = (Join-Path $PreviousDirectory $Producer $Series)
         }
         else {
-            $Destination = (Join-Path $OutDir $Producer $Series)
+            $Destination = (Join-Path $BaseDir $Producer $Series)
         }
 
         if (-not (Test-Path -PathType Any $Destination)) { 
@@ -101,12 +104,23 @@ try {
         }
 
         if (-not $Force) {
-            if ([int]$Quality -lt 480) {
-                $ArchiveFile = (Join-Path $Destination ".downloaded_low")
+            if (-not [string]::IsNullOrEmpty($BaseDir)) {
+                if ([int]$Quality -lt 480) {
+                    $ArchiveFile = (Join-Path $BaseDir ".downloaded_low")
+                }
+                else {
+                    $ArchiveFile = (Join-Path $BaseDir ".downloaded")
+                }
             }
             else {
-                $ArchiveFile = (Join-Path $Destination ".downloaded")
+                if ([int]$Quality -lt 480) {
+                    $ArchiveFile = (Join-Path $PreviousDirectory ".downloaded_low")
+                }
+                else {
+                    $ArchiveFile = (Join-Path $PreviousDirectory ".downloaded")
+                }
             }
+            
             if (-not (Test-Path -PathType Any $ArchiveFile)) {
                 New-Item -ItemType File -Path $ArchiveFile
                 if ($IsWindows) {
