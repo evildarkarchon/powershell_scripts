@@ -1,48 +1,48 @@
 #!/usr/bin/env pwsh
 using namespace System.Collections.Generic
 #using namespace System.Text
-[CmdletBinding(DefaultParameterSetName="Download")]
+[CmdletBinding(DefaultParameterSetName = "Download")]
 param (
-    [Parameter(ParameterSetName="Download")]
-    [Parameter(ParameterSetName="Batch")]
-    [string]$Quality="480",
-    [Parameter(ParameterSetName="Download")]
-    [Parameter(ParameterSetName="Batch")]
-    [string]$FrameRate="30",
-    [Parameter(ParameterSetName="Download")]
-    [Parameter(ParameterSetName="Batch")]
+    [Parameter(ParameterSetName = "Download")]
+    [Parameter(ParameterSetName = "Batch")]
+    [string]$Quality = "480",
+    [Parameter(ParameterSetName = "Download")]
+    [Parameter(ParameterSetName = "Batch")]
+    [string]$FrameRate = "30",
+    [Parameter(ParameterSetName = "Download")]
+    [Parameter(ParameterSetName = "Batch")]
     [string]$IntermediateDir,
     [Alias("OutDir")]
-    [Parameter(ParameterSetName="Download")]
-    [Parameter(ParameterSetName="Batch")]
+    [Parameter(ParameterSetName = "Download")]
+    [Parameter(ParameterSetName = "Batch")]
     [string]$BaseDir,
     [Alias("ConfigFile")]
-    [Parameter(ParameterSetName="Download")]
-    [Parameter(ParameterSetName="Batch")]
+    [Parameter(ParameterSetName = "Download")]
+    [Parameter(ParameterSetName = "Batch")]
     [string]$Config,
-    [Parameter(ParameterSetName="Download")]
-    [Parameter(ParameterSetName="Batch")]
+    [Parameter(ParameterSetName = "Download")]
+    [Parameter(ParameterSetName = "Batch")]
     [switch]$Force,
-    [Parameter(ParameterSetName="Test")]
+    [Parameter(ParameterSetName = "Test")]
     [switch]$ListFormats,
-    [Alias("Streamer","Podcast")]
-    [Parameter(ParameterSetName="Download")]
-    [Parameter(ParameterSetName="Batch")]
+    [Alias("Streamer", "Podcast")]
+    [Parameter(ParameterSetName = "Download")]
+    [Parameter(ParameterSetName = "Batch")]
     [string]$Producer,
-    [Parameter(ParameterSetName="Download")]
-    [Parameter(ParameterSetName="Batch")]
+    [Parameter(ParameterSetName = "Download")]
+    [Parameter(ParameterSetName = "Batch")]
     [string]$Series,
-    [Parameter(ParameterSetName="Download")]
-    [Parameter(ParameterSetName="Batch")]
+    [Parameter(ParameterSetName = "Download")]
+    [Parameter(ParameterSetName = "Batch")]
     [switch]$RestrictFilenames,
-    [Parameter(ParameterSetName="Download")]
-    [Parameter(ParameterSetName="Batch")]
+    [Parameter(ParameterSetName = "Download")]
+    [Parameter(ParameterSetName = "Batch")]
     [switch]$AutoNumber,    
-    [Parameter(Mandatory=$true, Position=0, ValueFromRemainingArguments=$true, ParameterSetName="Download")]
-    [Parameter(Mandatory=$false, Position=0, ValueFromRemainingArguments=$true, ParameterSetName="Test")]
+    [Parameter(Mandatory = $true, Position = 0, ValueFromRemainingArguments = $true, ParameterSetName = "Download")]
+    [Parameter(Mandatory = $false, Position = 0, ValueFromRemainingArguments = $true, ParameterSetName = "Test")]
     [string[]]$Urls,
-    [Parameter(Mandatory=$true, ParameterSetName="Batch")]
-    [Parameter(Mandatory=$false, ParameterSetName="Test")]
+    [Parameter(Mandatory = $true, ParameterSetName = "Batch")]
+    [Parameter(Mandatory = $false, ParameterSetName = "Test")]
     [string]$BatchFile
 )
 if (-not (Test-Path Variable:\IsWindows)) {
@@ -59,7 +59,7 @@ else {
 
 function YoutubeDL {
     param (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string[]]$Options
     )
     youtube-dl $Options
@@ -73,7 +73,7 @@ try {
     [string]$Destination = ""
     if ($ListFormats -eq $true) {
         $YtDlOptions.Add("--list-formats")
-        if (-not [string]::IsNullOrEmpty($BatchFile)){
+        if (-not [string]::IsNullOrEmpty($BatchFile)) {
             foreach ($i in @("-a", $BatchFile)) {
                 $YtDlOptions.Add($i)
             }
