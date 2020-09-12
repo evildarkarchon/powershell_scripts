@@ -1,8 +1,8 @@
 [CmdletBinding()]
 param (
-    [Alias("o","Out","OutDir")]
+    [Alias("o", "Out", "OutDir")]
     [string]$outname,
-    [Parameter(Position=0, Mandatory=$true, ValueFromRemainingArguments=$true)]
+    [Parameter(Position = 0, Mandatory = $true, ValueFromRemainingArguments = $true)]
     [string[]]$paths
 )
 
@@ -16,13 +16,13 @@ $files = Get-ChildItem $paths -ErrorAction Stop
 foreach ($file in $files) {
     if (-not [string]::IsNullOrEmpty($outname)) {
         if ((Test-Path $outname -PathType Container)) {
-            ebook-polish -Hupe "$($file.Name)" (Join-Path $outname $file.Name) # "$($outname)\$($file.Name)"
+            ebook-polish -Hupe "$($file.FullName)" (Join-Path $outname $file.Name) # "$($outname)\$($file.Name)"
         }
         elseif (-not (Test-Path $outname -PathType Any)) {
-            ebook-polish -Hupe "$($file.Name)" "$($outname)"
+            ebook-polish -Hupe "$($file.FullName)" "$($outname)"
         }
     }
     else {
-        ebook-polish -Hupe "$($file.Name)"
+        ebook-polish -Hupe "$($file.FullName)"
     }
 }
