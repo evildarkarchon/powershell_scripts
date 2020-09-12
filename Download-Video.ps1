@@ -46,7 +46,7 @@ param (
     [string]$BatchFile
 )
 if (-not (Test-Path Variable:\IsWindows)) {
-    throw "This script does not work on Windows Powershell (aka Powershell <6.0)"
+    throw "This script does not work on Windows Powershell (aka Powershell <6.0), Powershell >=7.0 is recomended"
 }
 $PreviousDirectory = Get-Location
 
@@ -67,6 +67,7 @@ function YoutubeDL {
     if (-not [string]::IsNullOrEmpty($IntermediateDir) -and $? -and $IsWindows) {
         robocopy $IntermediateDir $Destination /mov /tbd "/r:5" /v /xf "*.txt" "*.ytdl" "*.part" "*.temp.*" "*.part-Frag*"
     }
+    exit
 }
 try {
     $YtDlOptions = [List[string]]::new()
