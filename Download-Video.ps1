@@ -67,7 +67,6 @@ function YoutubeDL {
     if (-not [string]::IsNullOrEmpty($IntermediateDir) -and $? -and $IsWindows) {
         robocopy $IntermediateDir $Destination /mov /tbd "/r:5" /v /xf "*.txt" "*.ytdl" "*.part" "*.temp.*" "*.part-Frag*"
     }
-    exit
 }
 try {
     $YtDlOptions = [List[string]]::new()
