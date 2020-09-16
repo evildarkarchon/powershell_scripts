@@ -178,7 +178,7 @@ try {
         }
 
         if (-not [string]::IsNullOrEmpty($BatchFile)) {
-            if ((Test-Path $BatchFile)) {
+            if ((Test-Path -PathType Leaf $BatchFile)) {
                 foreach ($i in @("-a", (Resolve-Path $BatchFile))) {
                     $YtDlOptions.Add($i)
                 }
