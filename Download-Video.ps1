@@ -178,10 +178,15 @@ try {
         }
 
         if (-not [string]::IsNullOrEmpty($BatchFile)) {
-            foreach ($i in @("-a", (Resolve-Path $BatchFile))) {
-                $YtDlOptions.Add($i)
+            if ((Test-Path $BatchFile)) {
+                foreach ($i in @("-a", (Resolve-Path $BatchFile))) {
+                    $YtDlOptions.Add($i)
+                }
             }
-        }            
+            else {
+                throw "The batch file that was specified does not exist or was specified improperly."
+            }
+        } 
         else {
             $YtDlOptions.AddRange($Urls) 
         }
