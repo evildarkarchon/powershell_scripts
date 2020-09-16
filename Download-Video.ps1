@@ -183,6 +183,9 @@ try {
                     $YtDlOptions.Add($i)
                 }
             }
+            elseif ((Test-Path -PathType Container $BatchFile)) {
+                throw "The path specified is a directory."
+            }
             else {
                 throw "The batch file that was specified does not exist or was specified improperly."
             }
