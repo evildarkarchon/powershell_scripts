@@ -2,7 +2,7 @@
 param (
     [Alias("o", "Out")]
     [string]$outname,
-    [string]$format = "azw3",
+    [string]$format = "kfx",
     [switch]$remove,
     [Parameter(Position = 0, Mandatory = $true, ValueFromRemainingArguments = $true)]
     [string[]]$paths
