@@ -37,6 +37,9 @@ param (
     [switch]$RestrictFilenames,
     [Parameter(ParameterSetName = "Download")]
     [Parameter(ParameterSetName = "Batch")]
+    [switch]$UseFfmpeg,
+    [Parameter(ParameterSetName = "Download")]
+    [Parameter(ParameterSetName = "Batch")]
     [switch]$AutoNumber,    
     [Parameter(Mandatory = $true, Position = 0, ValueFromRemainingArguments = $true, ParameterSetName = "Download")]
     [Parameter(Mandatory = $false, Position = 0, ValueFromRemainingArguments = $true, ParameterSetName = "Test")]
@@ -175,6 +178,10 @@ try {
         
         if ($RestrictFilenames) {
             $YtDlOptions.Add("--restrict-filenames")
+        }
+
+        if ($UseFfmpeg) {
+            $YtDlOptions.Add("--hls-prefer-ffmpeg")
         }
 
         if (-not [string]::IsNullOrEmpty($BatchFile)) {
