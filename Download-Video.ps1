@@ -15,7 +15,7 @@ param (
     [Alias("OutDir")]
     [Parameter(ParameterSetName = "Download")]
     [Parameter(ParameterSetName = "Batch")]
-    [string]$BaseDir,
+    [string]$BaseDir = (Get-Location),
     [Alias("ConfigFile")]
     [Parameter(ParameterSetName = "Download")]
     [Parameter(ParameterSetName = "Batch")]
@@ -207,7 +207,11 @@ try {
     }
 }
 finally {
-    if ((get-location) -ne $PreviousDirectory) {
+    if ((Get-Location) -ne $PreviousDirectory) {
         Set-Location $PreviousDirectory
+    }
+
+    if (-not [string]::IsNullOrEmpty($BatchFile)) {
+        Remove-Item -Confirm -Path (Resolve-Path $BatchFile)
     }
 }
